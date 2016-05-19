@@ -112,7 +112,7 @@ if(POLARSSL_FOUND)
 endif()
 
 if(ENABLE_TESTS_COMPONENT)
-	find_package(CUnit)
+	find_package(CUnit 3.0.1) # we need cunit 3.0.1 for automated junit output
 	if(CUNIT_FOUND)
 		cmake_push_check_state(RESET)
 		list(APPEND CMAKE_REQUIRED_INCLUDES ${CUNIT_INCLUDE_DIRS})
