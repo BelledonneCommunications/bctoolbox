@@ -201,11 +201,10 @@ static int bcGetLine(bctbx_vfs_file_t *pFile, char* s,  int max_len) {
 	sizeofline = 0;
 	isEof = 0;
 	
-	s[max_len-1] = '\0';
-	
 	/* Read returns 0 if end of file is found */
 	ret = bctbx_file_read(pFile, s, max_len-1, pFile->offset);
 	if (ret > 0){
+		s[ret] = '\0';
 		pNextLine = strchr(s, '\r');
 		if (pNextLine == NULL) pNextLine = strchr(s, '\n');
 		if (pNextLine)
