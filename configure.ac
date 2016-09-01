@@ -68,6 +68,16 @@ if test "$strict" = "true" ; then
 fi
 AC_SUBST(STRICT_OPTIONS)
 
+AC_ARG_ENABLE(tests,
+	[AS_HELP_STRING([--enable-tests], [Enable compilation of tests (default=yes)])],
+	[case "${enableval}" in
+		yes)	tests=true ;;
+		no)		tests=false  ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-tests) ;;
+	esac],
+	[tests=yes]
+)
+AM_CONDITIONAL(BUILD_TESTS, [test x$tests = xtrue && test x$cunit_found = xtrue])
 
 # Checks for libraries.
 
