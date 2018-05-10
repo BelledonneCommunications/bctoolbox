@@ -344,11 +344,10 @@ char * bctbx_strcat_vprintf(char* dst, const char *fmt, va_list ap){
 	if (!dst) return ret;
 
 	dstlen = strlen(dst);
-	retlen = strlen(ret);
+	retlen = strlen(ret) + 1;
 
-	if ((dst = bctbx_realloc(dst, dstlen+retlen+1)) != NULL){
+	if ((dst = bctbx_realloc(dst, dstlen+retlen)) != NULL){
 		strncat(dst,ret,retlen);
-		dst[dstlen+retlen] = '\0';
 		bctbx_free(ret);
 		return dst;
 	} else {
