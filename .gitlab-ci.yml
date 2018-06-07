@@ -1,0 +1,6 @@
+belr:
+    script:
+        - mkdir cmakebuild
+        - cd cmakebuild
+        - cmake3 -DCMAKE_PREFIX_PATH=WORK -DCMAKE_INSTALL_PREFIX=WORK .
+        - make
