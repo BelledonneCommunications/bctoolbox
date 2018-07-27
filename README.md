@@ -1,3 +1,4 @@
+[![pipeline status](https://gitlab.linphone.org/BC/public/bctoolbox/badges/master/pipeline.svg)](https://gitlab.linphone.org/BC/public/bctoolbox/commits/master)
 
 BcToolbox
 =========
