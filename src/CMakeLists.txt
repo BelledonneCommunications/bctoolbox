@@ -30,8 +30,8 @@ set(BCTOOLBOX_C_SOURCE_FILES
 )
 
 set(BCTOOLBOX_CXX_SOURCE_FILES
-	conversion/charconv_encoding.cc
 	containers/map.cc
+	conversion/charconv_encoding.cc
 	crypto/ecc.cc
 	utils/regex.cc
 	utils/exception.cc
