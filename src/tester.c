@@ -476,12 +476,12 @@ static void detect_res_prefix(const char* prog) {
 
 		if (prefix != NULL) {
 			if (bc_tester_resource_dir_prefix == NULL) {
-				bc_tester_printf(bc_printf_verbosity_error, "Resource directory set to %s", prefix);
+				bc_tester_printf(bc_printf_verbosity_info, "Resource directory set to %s", prefix);
 				bc_tester_set_resource_dir_prefix(prefix);
 			}
 
 			if (bc_tester_writable_dir_prefix == NULL) {
-				bc_tester_printf(bc_printf_verbosity_error, "Writable directory set to %s", prefix);
+				bc_tester_printf(bc_printf_verbosity_info, "Writable directory set to %s", prefix);
 				bc_tester_set_writable_dir_prefix(prefix);
 			}
 			free(prefix);
