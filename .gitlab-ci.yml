@@ -61,7 +61,7 @@ build-bctoolbox:
   #uploading the artifacts for the next stage    
   artifacts:
     paths:
-      - build-bctoolbox/test/*
+      - build-bctoolbox/tester/*
       
 test:
   variables:
