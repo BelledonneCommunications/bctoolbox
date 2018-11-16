@@ -70,5 +70,7 @@ test:
     - cd build-bctoolbox/tester
     - ./bctoolbox_tester
   dependencies:
-    - build
+    - build-decaf
+    - build-mbedtls
+    - build-bcunit
   #test artifact to add
