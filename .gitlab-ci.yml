@@ -49,7 +49,9 @@ build-bctoolbox:
     - cmake .. -DCMAKE_INSTALL_PREFIX=../install
     - cmake --build . --target install
   dependencies:
-    - build-dependencies
+    - build-decaf
+    - build-mbedtls
+    - build-bcunit
   #uploading the artifacts for the next stage    
   artifacts:
     paths:
@@ -70,7 +72,5 @@ test:
     - cd build-bctoolbox/tester
     - ./bctoolbox_tester
   dependencies:
-    - build-decaf
-    - build-mbedtls
-    - build-bcunit
+    - build-bctoolbox
   #test artifact to add
