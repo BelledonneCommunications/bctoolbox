@@ -1,10 +1,11 @@
 #we use for testing purposes the docker container of linphone-sdk
 image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-debian:9
 stages:
+  - build-dependencies
   - build
   - test
 build-decaf:
-  stage: build
+  stage: build-dependencies
   tags: [ "docker" ] #needed for the stage to be runned
   script:
     - mkdir -p build-decaf && cd build-decaf
@@ -16,7 +17,7 @@ build-decaf:
       - install/*
     
 build-mbedtls:
-  stage: build
+  stage: build-dependencies
   tags: [ "docker" ] #needed for the stage to be runned
   script:
     - mkdir -p build-mbedtls && cd build-mbedtls
