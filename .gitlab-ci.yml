@@ -62,6 +62,7 @@ build-bctoolbox:
   artifacts:
     paths:
       - build-bctoolbox/tester/*
+      - install/lib/libbctoolbox.so.1
       
 test:
   variables:
