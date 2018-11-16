@@ -8,6 +8,7 @@ build-decaf:
   stage: build-dependencies
   tags: [ "docker" ] #needed for the stage to be runned
   script:
+    - git clone https://gitlab.linphone.org/BC/public/external/decaf.git
     - mkdir -p build-decaf && cd build-decaf
     - cmake .. -DCMAKE_INSTALL_PREFIX=../install
     - cmake --build . --target install
@@ -20,6 +21,7 @@ build-mbedtls:
   stage: build-dependencies
   tags: [ "docker" ] #needed for the stage to be runned
   script:
+    - git clone https://gitlab.linphone.org/BC/public/external/mbedtls.git
     - mkdir -p build-mbedtls && cd build-mbedtls
     - cmake .. -DCMAKE_INSTALL_PREFIX=../install
     - cmake --build . --target install
@@ -32,6 +34,7 @@ build-bcunit:
   stage: build-dependencies
   tags: [ "docker" ] #needed for the stage to be runned
   script:
+    - git clone https://gitlab.linphone.org/BC/public/bcunit.git
     - mkdir -p build-bcunit && cd build-bcunit
     - cmake .. -DCMAKE_INSTALL_PREFIX=../install
     - cmake --build . --target install
