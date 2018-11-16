@@ -11,7 +11,7 @@ build-decaf:
     - git clone https://gitlab.linphone.org/BC/public/external/decaf.git
     - cd decaf
     - mkdir -p build-decaf && cd build-decaf
-    - cmake .. -DCMAKE_INSTALL_PREFIX=../install
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../../install
     - cmake --build . --target install
   #uploading the artifacts for the next stage    
   artifacts:
@@ -25,7 +25,7 @@ build-mbedtls:
     - git clone https://gitlab.linphone.org/BC/public/external/mbedtls.git
     - cd mbedtls
     - mkdir -p build-mbedtls && cd build-mbedtls
-    - cmake .. -DCMAKE_INSTALL_PREFIX=../install
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../../install
     - cmake --build . --target install
   #uploading the artifacts for the next stage    
   artifacts:
@@ -39,7 +39,7 @@ build-bcunit:
     - git clone https://gitlab.linphone.org/BC/public/bcunit.git
     - cd bcunit
     - mkdir -p build-bcunit && cd build-bcunit
-    - cmake .. -DCMAKE_INSTALL_PREFIX=../install
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../../install
     - cmake --build . --target install
   #uploading the artifacts for the next stage    
   artifacts:
