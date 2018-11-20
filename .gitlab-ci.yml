@@ -77,7 +77,6 @@ test:
    # - sudo apt-get install wget unzip
   script:
     #- cd build-bctoolbox/tester
-    - sudo apt-get update && sudo apt-get -y install echo lsmod
     - lsmod | grep -qw ipv6 && echo "IPv6 kernel driver loaded and configured." || echo "IPv6 not configured and/or driver loaded on the system."
     #- ./bctoolbox_tester
   dependencies:
