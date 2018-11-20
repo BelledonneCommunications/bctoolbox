@@ -80,9 +80,8 @@ test:
     - sudo apt-get update && sudo apt-get -y install net-tools grep awk cut head
     - ifconfig
     - ifconfig -a
-    - ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" \
-     | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1
-    #- ping6 localhost
+
+    - ping6 ipv6.google.com
     #- ./bctoolbox_tester
   dependencies:
     - build-bctoolbox
