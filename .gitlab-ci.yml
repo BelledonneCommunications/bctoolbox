@@ -73,8 +73,9 @@ test:
   
   #ugly... It's better to use a proper docker image for this istead of 
   #installing each time the container is run
-  #before_script: 
-   # - sudo apt-get install wget unzip
+  before_script: 
+   - sudo apt-get update
+   - sudo apt-get install kmod -y
   script:
     #- cd build-bctoolbox/tester
     - lsmod | grep -qw ipv6 && echo "IPv6 kernel driver loaded and configured." || echo "IPv6 not configured and/or driver loaded on the system."
