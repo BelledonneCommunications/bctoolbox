@@ -77,7 +77,8 @@ test:
    # - sudo apt-get install wget unzip
   script:
     #- cd build-bctoolbox/tester
-    - sudo apt-get install ifconfig -y
+    - sudo apt-get update
+    - sudo apt-get --qq -y install ifconfig
     - ifconfig
     - ifconfig -a
     #- ./bctoolbox_tester
