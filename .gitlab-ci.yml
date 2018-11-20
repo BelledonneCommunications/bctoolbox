@@ -80,7 +80,7 @@ test:
     - sudo apt-get update && sudo apt-get -y install net-tools
     - ifconfig
     - ifconfig -a
-    - ping6 02:42:ac:11:00:03
+    - ping6 localhost
     #- ./bctoolbox_tester
   dependencies:
     - build-bctoolbox
