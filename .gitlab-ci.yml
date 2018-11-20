@@ -77,9 +77,10 @@ test:
    # - sudo apt-get install wget unzip
   script:
     #- cd build-bctoolbox/tester
-    - sudo apt-get update && sudo apt-get -y install net-tools
+    - sudo apt-get update && sudo apt-get -y install net-tools ping6
     - ifconfig
     - ifconfig -a
+    - ping6 02:42:ac:11:00:03
     #- ./bctoolbox_tester
   dependencies:
     - build-bctoolbox
