@@ -81,7 +81,7 @@ test:
     - ifconfig
     - ifconfig -a
 
-    - ping6 ipv6.google.com
+    - ping6 2001:4860:4860::8888
     #- ./bctoolbox_tester
   dependencies:
     - build-bctoolbox
