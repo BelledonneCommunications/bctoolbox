@@ -78,7 +78,7 @@ test:
   script:
     #- cd build-bctoolbox/tester
     - sudo apt-get update
-    - sudo apt-get --qq -y install ifconfig
+    - sudo apt-get -y install ifconfig
     - ifconfig
     - ifconfig -a
     #- ./bctoolbox_tester
