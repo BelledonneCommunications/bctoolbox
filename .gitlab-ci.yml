@@ -77,7 +77,7 @@ test:
    # - sudo apt-get install wget unzip
   script:
     #- cd build-bctoolbox/tester
-    - sudo apt-get update && sudo apt-get -y install net-tools grep awk cut head
+    - sudo apt-get update && sudo apt-get -y install net-tools
     - ifconfig
     - ifconfig -a
 
