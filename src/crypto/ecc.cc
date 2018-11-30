@@ -343,7 +343,7 @@ void bctbx_DestroyEDDSAContext(bctbx_EDDSAContext_t *context) {
  * @param[in/out]	signatureLength		The size of the signature buffer as input, the size of the actual signature as output
  *
  */
-void bctbx_EDDSA_sign(bctbx_EDDSAContext_t *context, const uint8_t *message, const size_t messageLength, const uint8_t *associatedData, const size_t associatedDataLength, uint8_t *signature, size_t *signatureLength) {
+void bctbx_EDDSA_sign(bctbx_EDDSAContext_t *context, const uint8_t *message, const size_t messageLength, const uint8_t *associatedData, const uint8_t associatedDataLength, uint8_t *signature, size_t *signatureLength) {
 	if (context!=NULL) {
 		switch (context->algo) {
 			case BCTBX_EDDSA_25519:
@@ -422,7 +422,7 @@ void bctbx_EDDSA_setSecretKey(bctbx_EDDSAContext_t *context, const uint8_t *secr
  *
  * @return BCTBX_VERIFY_SUCCESS or BCTBX_VERIFY_FAILED
  */
-int bctbx_EDDSA_verify(bctbx_EDDSAContext_t *context, const uint8_t *message, size_t messageLength, const uint8_t *associatedData, const size_t associatedDataLength, const uint8_t *signature, size_t signatureLength) {
+int bctbx_EDDSA_verify(bctbx_EDDSAContext_t *context, const uint8_t *message, size_t messageLength, const uint8_t *associatedData, const uint8_t associatedDataLength, const uint8_t *signature, size_t signatureLength) {
 	int ret = BCTBX_VERIFY_FAILED;
 	if (context!=NULL) {
 		decaf_error_t retDecaf = DECAF_FAILURE;
