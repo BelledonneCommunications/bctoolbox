@@ -23,7 +23,7 @@ job-centos7-makefile-gcc:
     - export CXX=$CXX
     - mkdir cmakebuild
     - cd cmakebuild
-    - cmake .. -DCMAKE_INSTALL_PREFIX=${BUILD_PREFIX} -DCMAKE_PREFIX_PATH=${BUILD_PREFIX}
+    - cmake ..
     - make VERBOSE=1
 
 
@@ -39,7 +39,7 @@ job-centos7-makefile-clang:
     - export CXX=$CXX
     - mkdir cmakebuild
     - cd cmakebuild
-    - cmake .. -DCMAKE_INSTALL_PREFIX=${BUILD_PREFIX} -DCMAKE_PREFIX_PATH=${BUILD_PREFIX}
+    - cmake ..
     - make VERBOSE=1
 
 
