@@ -1,0 +1,77 @@
+#################################################
+# Base configuration
+#################################################
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  MAKEFILE_JOBS: 5
+  CCACHE_SIZE: 2G
+
+#################################################
+# Makefile
+#################################################
+
+job-centos7-makefile-gcc:
+  tags: [ "docker-centos7" ]
+  image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-centos:7
+  variables:
+    CMAKE_GENERATOR: Unix Makefiles
+    CC: gcc
+    CXX: g++
+  script:
+    - export CC=$CC
+    - export CXX=$CXX
+    - mkdir cmakebuild
+    - cd cmakebuild
+    - cmake .. -DCMAKE_INSTALL_PREFIX=${BUILD_PREFIX} -DCMAKE_PREFIX_PATH=${BUILD_PREFIX}
+    - make VERBOSE=1
+
+
+job-centos7-makefile-clang:
+  tags: [ "docker-centos7" ]
+  image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-centos:7
+  variables:
+    CMAKE_GENERATOR: Unix Makefiles
+    CC: clang
+    CXX: clang++
+  script:
+    - export CC=$CC
+    - export CXX=$CXX
+    - mkdir cmakebuild
+    - cd cmakebuild
+    - cmake .. -DCMAKE_INSTALL_PREFIX=${BUILD_PREFIX} -DCMAKE_PREFIX_PATH=${BUILD_PREFIX}
+    - make VERBOSE=1
+
+
+#################################################
+# Ninja
+#################################################
+
+#job-centos7-ninja-gcc:
+#  stage: build
+#  tags: [ "docker-centos7" ]
+#  image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-centos:7
+#  variables:
+#    CMAKE_GENERATOR: Ninja
+#    CC: gcc
+#    CXX: g++
+#  script:
+#    - mkdir cmakebuild
+#    - cd cmakebuild
+#    - cmake .. -DCMAKE_INSTALL_PREFIX=${BUILD_PREFIX} -DCMAKE_PREFIX_PATH=${BUILD_PREFIX}
+#    - make VERBOSE=1
+#
+#
+#job-centos7-ninja-clang:
+#  stage: build
+#  tags: [ "docker-centos7" ]
+#  image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-centos:7
+#  variables:
+#    CMAKE_GENERATOR: Ninja
+#    CC: clang
+#    CXX: clang++
+#  script:
+#    - cd /
+
+stages:
+ - build
