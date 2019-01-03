@@ -3,7 +3,6 @@
 #################################################
 
 variables:
-  GIT_SUBMODULE_STRATEGY: recursive
   MAKEFILE_JOBS: 5
   CCACHE_SIZE: 2G
 
@@ -12,6 +11,7 @@ variables:
 #################################################
 
 job-centos7-makefile-gcc:
+  stage: build
   tags: [ "docker-centos7" ]
   image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-centos:7
   variables:
@@ -24,10 +24,11 @@ job-centos7-makefile-gcc:
     - mkdir cmakebuild
     - cd cmakebuild
     - cmake ..
-    - make VERBOSE=1
+    - make -j$MAKEFILE_JOBS VERBOSE=1
 
 
 job-centos7-makefile-clang:
+  stage: build
   tags: [ "docker-centos7" ]
   image: gitlab.linphone.org:4567/bc/public/linphone-sdk/bc-dev-centos:7
   variables:
@@ -40,7 +41,7 @@ job-centos7-makefile-clang:
     - mkdir cmakebuild
     - cd cmakebuild
     - cmake ..
-    - make VERBOSE=1
+    - make -j$MAKEFILE_JOBS VERBOSE=1
 
 
 #################################################
