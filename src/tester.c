@@ -313,6 +313,18 @@ char *bc_tester_get_failed_asserts(void) {
 	return buffer;
 }
 
+#ifdef _WIN32
+
+void write_suite_result_file(char *suite_name, char *results_string) {
+	//TODO Windows support
+}
+
+void merge_and_print_results_files(void) {
+	//TODO Windows support
+}
+
+#else
+
 void write_suite_result_file(char *suite_name, char *results_string) {
 	bctbx_vfs_file_t* bctbx_file;
 	char *suite_name_wo_spaces, *file_name;
@@ -344,8 +356,8 @@ void merge_and_print_results_files(void) {
 		bctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), file_name, O_RDONLY);
 
 		if (bctbx_file) {
-			file_size = bctbx_file_size(bctbx_file);
-			if (file_size) {
+			file_size = (int64_t) bctbx_file_size(bctbx_file);
+			if (file_size > 0) {
 				buffer = malloc(file_size + 1);
 				read_bytes = bctbx_file_read(bctbx_file, (void *)buffer, file_size, 0);
 				if (read_bytes == file_size) {
@@ -372,9 +384,13 @@ void merge_and_print_results_files(void) {
 		free(suite_name_wo_spaces);
 		free(file_name);
 	}
-	bc_tester_printf(bc_printf_verbosity_info, "Tests suites results: \n%s", results);
-	free(results);
+	if (results) {
+		bc_tester_printf(bc_printf_verbosity_info, "Tests suites results: \n%s", results);
+		free(results);
+	}
 }
+
+#endif
 
 static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
 #ifdef HAVE_CU_GET_SUITE
