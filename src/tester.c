@@ -292,13 +292,13 @@ void bc_tester_list_tests(const char *suite_name) {
 char *bc_tester_get_failed_asserts(void) {
 	int i;
 	CU_pFailureRecord pFailure = NULL;
-	char *buffer = "";
+	char *buffer = "", *tmp;
 
 	pFailure = CU_get_failure_list();
 
 	if (pFailure) {
 		for (i = 1; (NULL != pFailure); pFailure = pFailure->pNext, i++) {
-			buffer = bc_sprintf("%s\n    %d. %s:%u  - %s",
+			tmp = bc_sprintf("%s\n    %d. %s:%u  - %s",
 					    buffer,
 					    i,
 					    (NULL != pFailure->strFileName) ? pFailure->strFileName : "",
@@ -307,16 +307,90 @@ char *bc_tester_get_failed_asserts(void) {
 			if (i != 1) {
 				free(buffer);
 			}
+			buffer = tmp;
 		}
 	}
 	return buffer;
 }
 
+void write_suite_result_file(char *suite_name, char *results_string) {
+	bctbx_vfs_file_t* bctbx_file;
+	char *suite_name_wo_spaces, *file_name;
+
+
+	suite_name_wo_spaces = bctbx_replace(bctbx_strdup(suite_name), ' ', '_');
+	file_name = bc_sprintf("%s.result", suite_name_wo_spaces);
+	bctbx_file = bctbx_file_open(bctbx_vfs_get_default(), file_name, "w+");
+	if (bctbx_file) {
+		bctbx_file_truncate(bctbx_file, 0);
+		bctbx_file_fprintf(bctbx_file, 0, results_string);
+		bctbx_file_close(bctbx_file);
+	}
+	free(suite_name_wo_spaces);
+	free(file_name);
+}
+
+void merge_and_print_results_files() {
+	bctbx_vfs_file_t* bctbx_file;
+	int i;
+	ssize_t file_size, read_bytes;
+	char *buffer, *tmp;
+	char *suite_name_wo_spaces, *file_name;
+	char *results = NULL;
+
+	for (i = 0; i < nb_test_suites; i++) {
+		suite_name_wo_spaces = bctbx_replace(bctbx_strdup(test_suite[i]->name), ' ', '_');
+		file_name = bc_sprintf("%s.result", suite_name_wo_spaces);
+		bctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), file_name, O_RDONLY);
+
+		if (bctbx_file) {
+			file_size = bctbx_file_size(bctbx_file);
+			if (file_size) {
+				buffer = malloc(file_size + 1);
+				read_bytes = bctbx_file_read(bctbx_file, (void *)buffer, file_size, 0);
+				if (read_bytes == file_size) {
+					buffer[read_bytes] = '\0';
+
+					if (results == NULL) {
+						results = bctbx_concat("Suite '", test_suite[i]->name, "' results:\n", buffer, NULL);
+					} else {
+						tmp = bctbx_concat(results, "\nSuite '", test_suite[i]->name, "' results:\n", buffer, NULL);
+						free(results);
+						results = tmp;
+					}
+				} else {
+					bc_tester_printf(bc_printf_verbosity_error, "Failed to read suite results file '%s'", file_name);
+				}
+				free(buffer);
+			} else {
+				bc_tester_printf(bc_printf_verbosity_error, "Empty suite results file '%s'", file_name);
+			}
+			remove(file_name);
+		} else {
+			bc_tester_printf(bc_printf_verbosity_error, "Failed to open suite results file '%s'", file_name);
+		}
+		free(suite_name_wo_spaces);
+		free(file_name);
+	}
+	bc_tester_printf(bc_printf_verbosity_info, "Tests suites results: \n%s", results);
+	free(results);
+}
+
 static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
 #ifdef HAVE_CU_GET_SUITE
-	char * results = CU_get_run_results_string();
-	bc_tester_printf(bc_printf_verbosity_info,"\n%s",results);
-	CU_FREE(results);
+	if (parallel_suites != 0) {
+		if (suite_name) {
+			char *results = CU_get_run_results_string();
+			write_suite_result_file(suite_name, results);
+			CU_FREE(results);
+		} else {
+			merge_and_print_results_files();
+		}
+	} else {
+		char *results = CU_get_run_results_string();
+		bc_tester_printf(bc_printf_verbosity_info,"\n%s", results);
+		CU_FREE(results);
+	}
 #endif
 }
 
@@ -561,7 +635,7 @@ int start_sub_process(const char *suite_name) {
 	const char *argv[origin_argc + 10]; //Assume safey 10 more parameters
 
 	argv[argc++] = origin_argv[0];
-	for (i = 1;	origin_argv[i]; ++i) {
+	for (i = 1; origin_argv[i]; ++i) {
 		if (strcmp(origin_argv[i], "--verbose") == 0) {
 			argv[argc++] = origin_argv[i];
 		} else if (strcmp(origin_argv[i], "--silent") == 0) {
@@ -690,6 +764,7 @@ int bc_tester_run_parallel(void) {
 		kill_sub_processes(suitesPids);
 	}
 	bc_tester_printf(bc_printf_verbosity_info, "All suites ended.");
+	all_complete_message_handler(NULL);
 	return ret;
 }
 
