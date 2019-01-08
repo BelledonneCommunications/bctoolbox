@@ -316,6 +316,8 @@ char *bc_tester_get_failed_asserts(void) {
 #ifdef _WIN32
 
 void write_suite_result_file(char *suite_name, char *results_string) {
+	(void)suite_name;
+	(void)results_string;
 	//TODO Windows support
 }
 
