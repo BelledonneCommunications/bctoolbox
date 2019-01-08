@@ -330,7 +330,7 @@ void write_suite_result_file(char *suite_name, char *results_string) {
 	free(file_name);
 }
 
-void merge_and_print_results_files() {
+void merge_and_print_results_files(void) {
 	bctbx_vfs_file_t* bctbx_file;
 	int i;
 	ssize_t file_size, read_bytes;
