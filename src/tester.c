@@ -724,7 +724,7 @@ int bc_tester_run_parallel(void) {
 
 	//Assume there is a problem if a suite is still running 60mn after the start of the tester. TODO make timeout	a cli parameter ?
 	uint64_t timeout = 0;
-	if (globalTimeout == 0) {
+	if (globalTimeout <= 0) {
 			globalTimeout = 60;
 	}
 	timeout = time_start + (globalTimeout * 60 * 1000);
