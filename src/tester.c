@@ -1113,7 +1113,6 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 {
 	int ret = 0;
 	int i = argid;
-	int isParallel = 0 ; //boolean set to false. TODO use a typedef for a clearer code.
 
 	if (strcmp(argv[i],"--help")==0){
 		return -1;
@@ -1159,11 +1158,10 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 			origin_argv = argv;
 			origin_argc = argc;
 		}
-		isParallel = 1;
 		//Defaults to JUnit report if parallel is enabled
 		xml_enabled = 1;
 		parallel_suites = 1;
-	} else if (isParallel &&(strcmp(argv[i], "--timeout") == 0)) {
+	} else if (strcmp(argv[i], "--timeout") == 0) {
 		CHECK_ARG("--timeout", ++i, argc);
 		globalTimeout = atoi(argv[i]);
 	} else if (strcmp(argv[i], "--max-alloc") == 0) {
