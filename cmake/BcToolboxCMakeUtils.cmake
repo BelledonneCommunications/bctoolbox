@@ -29,6 +29,11 @@ macro(bc_init_compilation_flags CPP_FLAGS C_FLAGS CXX_FLAGS STRICT_COMPILATION)
 	if(MSVC)
 		if(${STRICT_COMPILATION})
 			list(APPEND ${CPP_FLAGS} "/WX")
+			list(APPEND ${CXX_FLAGS} "/ZW"
+				"/AI\"C:/Program Files (x86)/Windows Kits/10/UnionMetadata\""
+				"/AI\"C:/Program Files (x86)/Windows Kits/10/References/Windows.Foundation.UniversalApiContract/3.0.0.0\""
+				"/AI\"C:/Program Files (x86)/Windows Kits/10/References/Windows.Foundation.FoundationContract/2.0.0.0\""
+				"/AI\"C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/VC/vcpackages\"") # https://docs.microsoft.com/en-us/cpp/porting/how-to-use-existing-cpp-code-in-a-universal-windows-platform-app
 			list(APPEND STRICT_OPTIONS_CPP "/wd4996") # Disable deprecated function warnings
 		endif()
 	else()
