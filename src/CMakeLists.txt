@@ -213,7 +213,7 @@ if(ENABLE_TESTS_COMPONENT)
 	if(ENABLE_SHARED)
 		target_include_directories(bctoolbox-tester PUBLIC ${BCUNIT_INCLUDE_DIRS})
 		target_link_libraries(bctoolbox-tester PRIVATE bctoolbox ${BCUNIT_LIBRARIES})
-		if(IOS)
+		if(APPLE)
 			set_target_properties(bctoolbox-tester PROPERTIES
 				FRAMEWORK TRUE
 				MACOSX_FRAMEWORK_IDENTIFIER com.belledonne-communications.bctoolbox-tester
