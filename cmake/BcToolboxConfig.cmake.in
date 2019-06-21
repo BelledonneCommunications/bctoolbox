@@ -39,6 +39,11 @@
 include("${CMAKE_CURRENT_LIST_DIR}/bctoolboxTargets.cmake")
 
 list(APPEND bctoolbox_FIND_COMPONENTS core)
+
+if (ENABLE_TESTS_COMPONENT)
+	list(APPEND bctoolbox_FIND_COMPONENTS tester)
+endif()
+
 list(REMOVE_DUPLICATES bctoolbox_FIND_COMPONENTS)
 set(bctoolbox_FIND_REQUIRED_core TRUE)
 
