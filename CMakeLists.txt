@@ -23,7 +23,6 @@
 cmake_minimum_required(VERSION 3.2) #since cmake 3.2 is available as a patch for yocto Fido
 set(CMAKE_MACOSX_RPATH ON) # Before cmake 3.0.0, MACOSX_RPATH was not set to ON by default - however this is no good reason to not enable it by default
 
-
 project(bctoolbox)
 
 set(BCTOOLBOX_VERSION_MAJOR 0)
@@ -136,12 +135,6 @@ include_directories(
 	include
 	src
 	${CMAKE_CURRENT_BINARY_DIR}
-	# $<BUILD_INTERFACE:include>
-	# $<BUILD_INTERFACE:src>
-	# $<INSTALL_INTERFACE:include>
-	# $<INSTALL_INTERFACE:src>
-	# $<BUILD_INTERFACE:$<$<CMAKE_CURRENT_BINARY_DIR>>>
-	# $<INSTALL_INTERFACE:$<$<CMAKE_CURRENT_BINARY_DIR>>>
 )
 
 set(BCTOOLBOX_CPPFLAGS )
