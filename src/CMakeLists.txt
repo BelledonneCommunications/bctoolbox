@@ -186,6 +186,7 @@ if(MBEDTLS_FOUND)
 		target_include_directories(bctoolbox PUBLIC
 			$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 			$<INSTALL_INTERFACE:include>
+			$<INSTALL_INTERFACE:include/bctoolbox>
 		)
 		target_link_libraries(bctoolbox PRIVATE ${MBEDTLS_LIBRARIES})
 	endif()
@@ -202,10 +203,12 @@ if(POLARSSL_FOUND)
 endif()
 if(DECAF_FOUND)
 	if(ENABLE_STATIC)
-		target_link_libraries(bctoolbox-static INTERFACE ${DECAF_LIBRARY})
+		target_include_directories(bctoolbox-static PRIVATE ${DECAF_INCLUDE_DIRS})
+		target_link_libraries(bctoolbox-static PUBLIC ${DECAF_LIBRARIES})
 	endif()
 	if(ENABLE_SHARED)
-		target_link_libraries(bctoolbox PRIVATE decaf)
+		target_include_directories(bctoolbox PRIVATE ${DECAF_INCLUDE_DIRS})
+		target_link_libraries(bctoolbox PUBLIC ${DECAF_LIBRARIES})
 	endif()
 endif()
 
