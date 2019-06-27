@@ -175,7 +175,6 @@ if(ENABLE_STATIC)
 	target_include_directories(bctoolbox-static PUBLIC
 		$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
-		$<INSTALL_INTERFACE:include/bctoolbox>
 	)
 endif()
 
@@ -183,22 +182,16 @@ if(ENABLE_SHARED)
 	target_include_directories(bctoolbox PUBLIC
 		$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
-		$<INSTALL_INTERFACE:include/bctoolbox>
 	)
 endif()
 
 if(MBEDTLS_FOUND)
 	if(ENABLE_STATIC)
-		target_include_directories(bctoolbox-static PRIVATE ${MBEDTLS_INCLUDE_DIRS})
+		target_include_directories(bctoolbox-static SYSTEM PRIVATE ${MBEDTLS_INCLUDE_DIRS})
 		target_link_libraries(bctoolbox-static INTERFACE ${MBEDTLS_LIBRARIES})
 	endif()
 	if(ENABLE_SHARED)
 		target_include_directories(bctoolbox SYSTEM PRIVATE ${MBEDTLS_INCLUDE_DIRS})
-		target_include_directories(bctoolbox PUBLIC
-			$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-			$<INSTALL_INTERFACE:include>
-			$<INSTALL_INTERFACE:include/bctoolbox>
-		)
 		target_link_libraries(bctoolbox PRIVATE ${MBEDTLS_LIBRARIES})
 	endif()
 endif()
