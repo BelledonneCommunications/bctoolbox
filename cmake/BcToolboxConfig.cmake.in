@@ -93,4 +93,5 @@ foreach(comp ${bctoolbox_FIND_COMPONENTS})
 	endif()
 endforeach()
 
-include("${CMAKE_CURRENT_LIST_DIR}/bctoolboxCMakeUtils.cmake")
+set(BCTOOLBOX_CMAKE_UTILS "${CMAKE_CURRENT_LIST_DIR}/bctoolboxCMakeUtils.cmake")
+include("${BCTOOLBOX_CMAKE_UTILS}")

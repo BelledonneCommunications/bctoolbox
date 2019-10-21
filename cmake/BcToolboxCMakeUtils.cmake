@@ -22,6 +22,10 @@
 
 set(BCTOOLBOX_CMAKE_UTILS_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
+macro(bc_check_git)
+	find_program(GIT_EXECUTABLE git NAMES Git CMAKE_FIND_ROOT_PATH_BOTH)
+endmacro()
+
 macro(bc_init_compilation_flags CPP_FLAGS C_FLAGS CXX_FLAGS STRICT_COMPILATION)
 	set(${CPP_FLAGS} )
 	set(${C_FLAGS} )
@@ -126,5 +130,47 @@ macro(bc_generate_rpm_specfile SOURCE DEST)
 		configure_file(${SOURCE} ${DEST} @ONLY)
 		unset(RPM_ALL_CMAKE_OPTIONS)
 		unset(_variableNames)
+	endif()
+endmacro()
+
+macro(bc_compute_full_version OUTPUT_VERSION)
+	bc_check_git()
+	if(GIT_EXECUTABLE)
+		execute_process(
+			COMMAND "${GIT_EXECUTABLE}" "describe" "--abbrev=0"
+			OUTPUT_VARIABLE GIT_OUTPUT_VERSION
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			ERROR_QUIET
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		)
+		if (DEFINED GIT_OUTPUT_VERSION)
+			set(${OUTPUT_VERSION} "${GIT_OUTPUT_VERSION}")
+			bc_compute_commits_count_since_latest_tag(${GIT_OUTPUT_VERSION} COMMIT_COUNT)
+			if (NOT ${COMMIT_COUNT} STREQUAL "0")
+				execute_process(
+					COMMAND "${GIT_EXECUTABLE}" "rev-parse" "--short" "HEAD"
+					OUTPUT_VARIABLE COMMIT_HASH
+					OUTPUT_STRIP_TRAILING_WHITESPACE
+					ERROR_QUIET
+					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+				)
+				set(${OUTPUT_VERSION} "${${OUTPUT_VERSION}}.${COMMIT_COUNT}+${COMMIT_HASH}")
+			else()
+				#If commit count diff is 0, it means we are on the tag. Keep the version untouched
+			endif()
+		endif()
+	endif()
+endmacro()
+
+macro(bc_compute_commits_count_since_latest_tag LATEST_TAG OUTPUT_COMMITS_COUNT)
+	bc_check_git()
+	if(GIT_EXECUTABLE)
+		execute_process(
+			COMMAND "${GIT_EXECUTABLE}" "rev-list" "${LATEST_TAG}..HEAD" "--count"
+			OUTPUT_VARIABLE ${OUTPUT_COMMITS_COUNT}
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			ERROR_QUIET
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		)
 	endif()
 endmacro()
