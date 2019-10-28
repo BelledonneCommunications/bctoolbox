@@ -21,127 +21,99 @@
 
 #import <Foundation/Foundation.h>
 #include <dlfcn.h>
-#include <exception>
 
 #include "bctoolbox/ios_utils.hh"
+#include "bctoolbox/exception.hh"
 #include "bctoolbox/logging.h"
+#include "ios_utils_stub.hh"
 
-using namespace std;
+namespace bctoolbox {
 
-struct DylibException : public exception {
-    virtual void printError() = 0;
-};
+std::unique_ptr<IOSUtils> IOSUtils::sInstance = nullptr;
 
-struct DlopenException : public DylibException {
-    void printError() {
-        bctbx_error("bctoolbox error dlopen : %s\n", dlerror());
+IOSUtils& IOSUtils::getUtils() {
+    if (!sInstance) {
+        sInstance = std::unique_ptr<IOSUtils>(new IOSUtils);
     }
-};
+    
+    return *sInstance;
+}
 
-struct DlsymException : public DylibException {
-    void printError() {
-        bctbx_error("bctoolbox error dlsym : %s\n", dlerror());
+IOSUtils::IOSUtils() {
+    if (isApp()) {
+        openDynamicLib();
+        using create_t = IOSUtilsInterface *(*)();
+        auto createUtils = reinterpret_cast<create_t>(loadSymbol("bctbx_create_ios_utils_app"));
+        mUtils = createUtils();
+    } else {
+        mUtils = new IOSUtilsStub();
     }
-};
+}
 
+IOSUtils::~IOSUtils() {
+    if (isApp()) {
+        using destroy_t = void (*)(IOSUtilsInterface *);
+        auto destroyUtils = reinterpret_cast<destroy_t>(loadSymbol("bctbx_destroy_ios_utils_app"));
+        destroyUtils(mUtils);
+        dlclose(mHandle);
+    } else {
+        delete mUtils;        
+    }
+}
 
 bool IOSUtils::isApp() {
     return [[[NSBundle mainBundle] bundlePath] hasSuffix:@".app"];
 }
 
-IOSUtilsApp *IOSUtils::createIOSUtils(void *handle) {
-    create_t *createUtils = (create_t *) loadSymbol(handle, "create");
-    IOSUtilsApp *appUtils = createUtils();
-    return appUtils;
-}
-
-void IOSUtils::destroyIOSUtils(void *handle, IOSUtilsApp *appUtils) {
-    destroy_t* destroyUtils = (destroy_t *) loadSymbol(handle, "destroy");
-    destroyUtils(appUtils);
-}
-
-void *IOSUtils::openDynamicLib() {
+void IOSUtils::openDynamicLib() {
     NSString *frameworkPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingString: @"/Frameworks/bctoolbox-ios.framework/bctoolbox-ios"];
     const char *frameworkChar = [frameworkPath cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-    void *handle = dlopen(frameworkChar, RTLD_LAZY);
-    if (!handle) {
-        throw DlopenException();
+    mHandle = dlopen(frameworkChar, RTLD_LAZY);
+    if (!mHandle) {
+        throw BCTBX_EXCEPTION << "bctoolbox error dlopen : " << dlerror();
     }
 
     // reset errors
     dlerror();
-    return handle;
 }
 
-void IOSUtils::closeDynamicLib(void *handle) {
-    dlclose(handle);
-}
-
-void *IOSUtils::loadSymbol(void *handle, const char *symbol) {
-    void *loadedSymbol = dlsym(handle, symbol);
-    const char* dlsym_error = dlerror();
+void *IOSUtils::loadSymbol(const char *symbol) {
+    void *loadedSymbol = dlsym(mHandle, symbol);
+    const char *dlsym_error = dlerror();
+    
     if (dlsym_error) {
-        closeDynamicLib(handle);
-        throw DlsymException();
+        std::string error = dlsym_error;
+        dlclose(mHandle);
+        throw BCTBX_EXCEPTION << "bctoolbox error dlsym : " << error;
     }
     
     return loadedSymbol;
 }
 
-unsigned long IOSUtils::beginBackgroundTask(const char *name, bctbx_background_task_end_callback_t cb, void *data) {
-    unsigned long returnValue = 0;
-    if (!isApp()) {
-        return returnValue;
-    }
-    
-    try {
-        void *handle = openDynamicLib();
-        IOSUtilsApp *utilsApp = createIOSUtils(handle);
-        returnValue = utilsApp->beginBackgroundTask(name, cb, data);
-        destroyIOSUtils(handle, utilsApp);
-        closeDynamicLib(handle);
-    } catch (DylibException &e) {
-        e.printError();
-    }
-    
-    return returnValue;
+unsigned long IOSUtils::beginBackgroundTask(const char *name, std::function<void()> cb) {
+    return mUtils->beginBackgroundTask(name, cb);
 }
 
 void IOSUtils::endBackgroundTask(unsigned long id) {
-    if (!isApp()) {
-        return;
-    }
-    
-    try {
-        void *handle = openDynamicLib();
-        IOSUtilsApp *utilsApp = createIOSUtils(handle);
-        utilsApp->endBackgroundTask(id);
-        destroyIOSUtils(handle, utilsApp);
-        closeDynamicLib(handle);
-    } catch (DylibException &e) {
-        e.printError();
-    }
-    
+    return mUtils->endBackgroundTask(id);
 }
 
 bool IOSUtils::isApplicationStateActive() {
-    bool returnValue = false;
-    if (!isApp()) {
-        return returnValue;
-    }
-    
-    try {
-        void *handle = openDynamicLib();
-        IOSUtilsApp *utilsApp = createIOSUtils(handle);
-        returnValue = utilsApp->isApplicationStateActive();
-        destroyIOSUtils(handle, utilsApp);
-        closeDynamicLib(handle);
-    } catch (DylibException &e) {
-        e.printError();
-    }
-
-    return returnValue;
+    return mUtils->isApplicationStateActive();
 }
+
+
+unsigned long IOSUtilsStub::beginBackgroundTask(const char *name, std::function<void()> cb) {
+    return 0;
+}
+
+void IOSUtilsStub::endBackgroundTask(unsigned long id) {}
+
+bool IOSUtilsStub::isApplicationStateActive() {
+    return false;
+}
+
+} //namespace bctoolbox
 
 #endif

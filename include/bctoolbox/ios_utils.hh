@@ -17,36 +17,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ios_utils_h
-#define ios_utils_h
+#pragma once
 
-typedef void (*bctbx_background_task_end_callback_t)(void *);
+#include <memory>
+#include <functional>
 
-class IOSUtilsApp {
+namespace bctoolbox {
+
+class IOSUtilsInterface {
 public:
-    virtual unsigned long beginBackgroundTask(const char *name, bctbx_background_task_end_callback_t cb, void *data);
-    virtual void endBackgroundTask(unsigned long id);
-    virtual bool isApplicationStateActive();
-
-    virtual ~IOSUtilsApp() = default;
+    virtual unsigned long beginBackgroundTask(const char *name, std::function<void()> cb) = 0;
+    virtual void endBackgroundTask(unsigned long id) = 0;
+    virtual bool isApplicationStateActive() = 0;
+    
+    virtual ~IOSUtilsInterface() = default;
 };
-
-typedef IOSUtilsApp *create_t();
-typedef void destroy_t(IOSUtilsApp *);
 
 class IOSUtils {
 public:
-    unsigned long beginBackgroundTask(const char *name, bctbx_background_task_end_callback_t cb, void *data);
+    unsigned long beginBackgroundTask(const char *name, std::function<void()> cb);
     void endBackgroundTask(unsigned long id);
     bool isApplicationStateActive();
+    static IOSUtils& getUtils();
+    
+    IOSUtils(const IOSUtils&) = delete;
+    IOSUtils& operator=(const IOSUtils&) = delete;
+    ~IOSUtils();
 
 private:
-    bool isApp();
-    IOSUtilsApp *createIOSUtils(void *handle);
-    void destroyIOSUtils(void *handle, IOSUtilsApp *appUtils);
-    void *openDynamicLib();
-    void closeDynamicLib(void *handle);
-    void *loadSymbol(void *handle, const char *symbol);
-};
+    void *mHandle;
+    IOSUtilsInterface *mUtils;
+    static std::unique_ptr<IOSUtils> sInstance;
+    IOSUtils();
 
-#endif /* ios_utils_h */
+    bool isApp();
+    void openDynamicLib();
+    void *loadSymbol(const char *symbol);
+};
+    
+} //namespace bctoolbox

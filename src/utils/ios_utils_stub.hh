@@ -17,21 +17,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <dlfcn.h>
-#include "bctoolbox_tester.h"
+#pragma once
+
 #include "bctoolbox/ios_utils.hh"
 
-using namespace bctoolbox;
+namespace bctoolbox {
 
-static void ios_utils_return_values(void) {
-    auto &iOSUtils = IOSUtils::getUtils();
-    BC_ASSERT_EQUAL(iOSUtils.beginBackgroundTask(nullptr, nullptr), 0, unsigned long, "%lu");
-    BC_ASSERT_EQUAL(iOSUtils.isApplicationStateActive(), false, bool, "%d");
-}
-
-static test_t ios_utils_tests[] = {
-    TEST_NO_TAG("Return values for stubbed functions", ios_utils_return_values),
+class IOSUtilsStub : public IOSUtilsInterface {
+public:
+    unsigned long beginBackgroundTask(const char *name, std::function<void()> cb) override;
+    void endBackgroundTask(unsigned long id) override;
+    bool isApplicationStateActive() override;
 };
 
-test_suite_t ios_utils_test_suite = {"iOS Utilities", NULL, NULL, NULL, NULL,
-sizeof(ios_utils_tests) / sizeof(ios_utils_tests[0]), ios_utils_tests};
+} //namespace bctoolbox

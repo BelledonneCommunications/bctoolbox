@@ -21,25 +21,28 @@
 
 #if TARGET_OS_IPHONE
 
+#include <memory>
 #include <UIKit/UIApplication.h>
-#include "bctoolbox/ios_utils.hh"
+#include "ios_utils_app.hh"
 #include "bctoolbox/logging.h"
 
-unsigned long IOSUtilsApp::beginBackgroundTask(const char *name, bctbx_background_task_end_callback_t cb, void *data) {
+namespace bctoolbox {
+
+unsigned long IOSUtilsApp::beginBackgroundTask(const char *name, std::function<void()> cb) {
     __block UIBackgroundTaskIdentifier bgid = UIBackgroundTaskInvalid;
 
     dispatch_block_t block = ^{
         UIApplication *app=[UIApplication sharedApplication];
 
         @try {
-            if (cb==NULL){
+            if (cb==nullptr){
                 bctbx_error("belle_sip_begin_background_task(): the callback must not be NULL. Application must be aware that the background task needs to be terminated.");
                 bgid = UIBackgroundTaskInvalid;
                 @throw [NSException new];
             }
 
             void (^handler)() = ^{
-                cb(data);
+                cb();
             };
 
             if([app respondsToSelector:@selector(beginBackgroundTaskWithName:expirationHandler:)]){
@@ -76,7 +79,7 @@ unsigned long IOSUtilsApp::beginBackgroundTask(const char *name, bctbx_backgroun
     return (unsigned long)bgid;
 }
 
-void IOSUtilsApp::endBackgroundTask(unsigned long id) { 
+void IOSUtilsApp::endBackgroundTask(unsigned long id) {
     dispatch_block_t block = ^{
         UIApplication *app=[UIApplication sharedApplication];
         if (id != UIBackgroundTaskInvalid){
@@ -95,13 +98,15 @@ void IOSUtilsApp::endBackgroundTask(unsigned long id) {
 bool IOSUtilsApp::isApplicationStateActive() {
     return ([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
 }
+    
+} //namespace bctoolbox
 
 extern "C" {
-    IOSUtilsApp *create() {
-        return new IOSUtilsApp;
+    bctoolbox::IOSUtilsInterface *bctbx_create_ios_utils_app() {
+        return new bctoolbox::IOSUtilsApp;
     }
 
-    void destroy(IOSUtilsApp* p) {
+    void bctbx_destroy_ios_utils_app(bctoolbox::IOSUtilsInterface* p) {
         delete p;
     }
 }
