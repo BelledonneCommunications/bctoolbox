@@ -210,7 +210,7 @@ if(APPLE)
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.bctoolbox-ios
 			MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_SOURCE_DIR}/build/osx/Info.plist.in"
-			LINK_FLAGS "-framework UIKit"
+			LINK_FLAGS "-framework UIKit -framework Foundation -framework CoreFoundation"
 		)
 	endif()
 endif()
