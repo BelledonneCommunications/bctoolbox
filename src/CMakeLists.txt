@@ -36,13 +36,14 @@ set(BCTOOLBOX_CXX_SOURCE_FILES
 	utils/regex.cc
 )
 
-set(BCTOOLBOX_OBJC_SOURCE_FILES
-	utils/ios_utils.mm
-)
-
-set(BCTOOLBOX_IOS_OBJC_SOURCE_FILES
-	utils/ios_utils_app.mm
-)
+if(APPLE)
+	set(BCTOOLBOX_OBJC_SOURCE_FILES
+		utils/ios_utils.mm
+	)
+	set(BCTOOLBOX_IOS_OBJC_SOURCE_FILES
+		utils/ios_utils_app.mm
+	)
+endif()
 
 if(ANDROID)
 	list(APPEND BCTOOLBOX_CXX_SOURCE_FILES conversion/charconv_android.cc)

@@ -25,7 +25,6 @@ set(HEADER_FILES
 	compiler.h
 	defs.h
 	exception.hh
-	ios_utils.hh
 	list.h
 	logging.h
 	map.h
@@ -35,6 +34,10 @@ set(HEADER_FILES
 	vconnect.h
 	vfs.h
 )
+
+if(APPLE)
+	list(APPEND HEADER_FILES ios_utils.hh)
+endif()
 
 if(MBEDTLS_FOUND OR POLARSSL_FOUND)
 	list(APPEND HEADER_FILES crypto.h)
