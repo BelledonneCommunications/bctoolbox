@@ -150,7 +150,7 @@ function(bc_parse_full_version version major minor patch)
 	endif()
 endfunction()
 
-macro(bc_compute_full_version OUTPUT_VERSION)
+function(bc_compute_full_version OUTPUT_VERSION)
 	bc_check_git()
 	if(GIT_EXECUTABLE)
 		execute_process(
@@ -161,7 +161,7 @@ macro(bc_compute_full_version OUTPUT_VERSION)
 			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 		)
 		if (DEFINED GIT_OUTPUT_VERSION)
-			set(${OUTPUT_VERSION} "${GIT_OUTPUT_VERSION}")
+			set(output_version "${GIT_OUTPUT_VERSION}")
 			bc_compute_commits_count_since_latest_tag(${GIT_OUTPUT_VERSION} COMMIT_COUNT)
 			if (NOT ${COMMIT_COUNT} STREQUAL "0")
 				execute_process(
@@ -171,7 +171,7 @@ macro(bc_compute_full_version OUTPUT_VERSION)
 					ERROR_QUIET
 					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 				)
-				set(${OUTPUT_VERSION} "${${OUTPUT_VERSION}}.${COMMIT_COUNT}+${COMMIT_HASH}")
+				string(APPEND output_version ".${COMMIT_COUNT}+${COMMIT_HASH}")
 			else()
 				#If commit count diff is 0, it means we are on the tag. Keep the version untouched
 			endif()
@@ -179,14 +179,16 @@ macro(bc_compute_full_version OUTPUT_VERSION)
 			set(version_major )
 			set(version_minor )
 			set(version_patch )
-			bc_parse_full_version("${${OUTPUT_VERSION}}" version_major version_minor version_patch)
+			bc_parse_full_version("${output_version}" version_major version_minor version_patch)
 			set(short_version "${version_major}.${version_minor}.${version_patch}")
 			if (DEFINED PROJECT_VERSION AND NOT (short_version VERSION_EQUAL PROJECT_VERSION))
 				message(FATAL_ERROR "project and git version mismatch (project: '${PROJECT_VERSION}', git: '${short_version}')")
 			endif()
+
+			set(${OUTPUT_VERSION} "${output_version}" PARENT_SCOPE)
 		endif()
 	endif()
-endmacro()
+endfunction()
 
 macro(bc_compute_commits_count_since_latest_tag LATEST_TAG OUTPUT_COMMITS_COUNT)
 	bc_check_git()
