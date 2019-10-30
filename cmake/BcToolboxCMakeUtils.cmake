@@ -181,7 +181,7 @@ function(bc_compute_full_version OUTPUT_VERSION)
 			set(version_patch )
 			bc_parse_full_version("${output_version}" version_major version_minor version_patch)
 			set(short_version "${version_major}.${version_minor}.${version_patch}")
-			if (DEFINED PROJECT_VERSION AND NOT (short_version VERSION_EQUAL PROJECT_VERSION))
+			if (PROJECT_VERSION AND NOT (short_version VERSION_EQUAL PROJECT_VERSION))
 				message(FATAL_ERROR "project and git version mismatch (project: '${PROJECT_VERSION}', git: '${short_version}')")
 			endif()
 

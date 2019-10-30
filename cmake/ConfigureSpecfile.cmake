@@ -21,10 +21,12 @@
 ############################################################################
 
 include("${BCTOOLBOX_CMAKE_UTILS}")
-bc_compute_full_version(ORTP_VERSION)
+
+set(FULL_VERSION )
+bc_compute_full_version(FULL_VERSION)
 
 # In case we need to decompose the version
-if (ORTP_VERSION MATCHES "^(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)(-[.0-9A-Za-z-]+)?([+][.0-9A-Za-z-]+)?$")
+if (FULL_VERSION MATCHES "^(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)(-[.0-9A-Za-z-]+)?([+][.0-9A-Za-z-]+)?$")
 	set( version_major "${CMAKE_MATCH_1}" )
 	set( version_minor "${CMAKE_MATCH_2}" )
 	set( version_patch "${CMAKE_MATCH_3}" )
