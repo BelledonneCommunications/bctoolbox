@@ -202,3 +202,36 @@ macro(bc_compute_commits_count_since_latest_tag LATEST_TAG OUTPUT_COMMITS_COUNT)
 		)
 	endif()
 endmacro()
+
+function(bc_make_package_source_target)
+	set(basename "")
+	string(TOLOWER "${CMAKE_PROJECT_NAME}" basename)
+	set(specfile_name "${basename}.spec")
+	set(specfile_target "${basename}-rpm-spec")
+
+	bc_generate_rpm_specfile("rpm/${specfile_name}.cmake" "rpm/${specfile_name}.cmake")
+
+	add_custom_target(${specfile_target}
+	    COMMAND ${CMAKE_COMMAND}
+	        "-DPROJECT_VERSION=${PROJECT_VERSION}"
+	        "-DBCTOOLBOX_CMAKE_UTILS=${BCTOOLBOX_CMAKE_UTILS}"
+	        "-DSRC=${CMAKE_CURRENT_BINARY_DIR}/rpm/${specfile_name}.cmake"
+	        "-DDEST=${PROJECT_SOURCE_DIR}/${specfile_name}"
+	        -P "${BCTOOLBOX_CMAKE_DIR}/ConfigureSpecfile.cmake"
+	    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	    BYPRODUCTS "${PROJECT_SOURCE_DIR}/${specfile_name}"
+	)
+
+	add_custom_target(package_source
+	    COMMAND ${CMAKE_COMMAND}
+	        "-DBCTOOLBOX_CMAKE_UTILS=${BCTOOLBOX_CMAKE_UTILS}"
+	        "-DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
+	        "-DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}"
+	        "-DPROJECT_VERSION=${PROJECT_VERSION}"
+	        "-DCPACK_PACKAGE_NAME=${CPACK_PACKAGE_NAME}"
+	        "-DEXCLUDE_PATTERNS='${CPACK_SOURCE_IGNORE_FILES}'"
+	        -P "${BCTOOLBOX_CMAKE_DIR}/MakeArchive.cmake"
+	    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+	    DEPENDS ${specfile_target}
+	)
+endfunction()
