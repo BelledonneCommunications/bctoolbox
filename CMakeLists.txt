@@ -191,6 +191,8 @@ install(EXPORT ${EXPORT_TARGETS_NAME}Targets
 )
 
 install(FILES
+	"cmake/MakeArchive.cmake"
+	"cmake/ConfigureSpecfile.cmake"
 	"${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_TARGETS_NAME}Config.cmake"
 	"${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_TARGETS_NAME}ConfigVersion.cmake"
 	"${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_TARGETS_NAME}CMakeUtils.cmake"
