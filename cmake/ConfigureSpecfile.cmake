@@ -25,14 +25,13 @@ include("${BCTOOLBOX_CMAKE_UTILS}")
 set(FULL_VERSION )
 bc_compute_full_version(FULL_VERSION)
 
-# In case we need to decompose the version
-if (FULL_VERSION MATCHES "^(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)(-[.0-9A-Za-z-]+)?([+][.0-9A-Za-z-]+)?$")
-	set( version_major "${CMAKE_MATCH_1}" )
-	set( version_minor "${CMAKE_MATCH_2}" )
-	set( version_patch "${CMAKE_MATCH_3}" )
-	set( identifiers   "${CMAKE_MATCH_4}" )
-	set( metadata      "${CMAKE_MATCH_5}" )
-endif()
+set(version_major )
+set(version_minor )
+set(version_patch )
+set(identifiers )
+set(metadata )
+
+bc_parse_full_version(FULL_VERSION version_major version_minor version_patch identifiers metadata)
 
 set(RPM_VERSION ${version_major}.${version_minor}.${version_patch})
 if (NOT identifiers)
