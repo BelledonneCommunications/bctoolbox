@@ -1,6 +1,6 @@
 ############################################################################
 # CMakeLists.txt
-# Copyright (C) 2016  Belledonne Communications, Grenoble France
+# Copyright (C) 2010-2019 Belledonne Communications, Grenoble France
 #
 ############################################################################
 #
@@ -20,36 +20,18 @@
 #
 ############################################################################
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/BcToolboxCMakeUtils.cmake)
+set(BCTOOLBOX_CMAKE_DIR "${PROJECT_SOURCE_DIR}/cmake")
+set(BCTOOLBOX_CMAKE_UTILS "${BCTOOLBOX_CMAKE_DIR}/BcToolboxCMakeUtils.cmake")
+include("${BCTOOLBOX_CMAKE_DIR}/BcToolboxCMakeUtils.cmake")
 
 if(NOT CPACK_PACKAGE_NAME)
 	set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
 endif()
 
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../COPYING")
-
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-
-set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${PROJECT_VERSION})
-
-set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_IGNORE_FILES
 	"^${CMAKE_BINARY_DIR}"
 	"^${PROJECT_SOURCE_DIR}/.git*"
 )
 
-bc_project_build_version(${PROJECT_VERSION} PROJECT_VERSION_BUILD)
-if(PROJECT_VERSION_BUILD)
-	set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${PROJECT_VERSION_BUILD}")
-endif()
 
-message("-- Package file name is ${CPACK_PACKAGE_FILE_NAME}" )
-
-set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CPACK_PACKAGE_FILE_NAME})
-
-bc_generate_rpm_specfile("rpm/bctoolbox.spec.cmake" "${PROJECT_SOURCE_DIR}/bctoolbox.spec")
-
-include(CPack)
-
+bc_make_package_source_target()
