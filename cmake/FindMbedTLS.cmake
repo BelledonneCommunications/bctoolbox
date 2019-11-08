@@ -73,8 +73,6 @@ if(MBEDTLS_LIBRARY AND MBEDX509_LIBRARY AND MBEDCRYPTO_LIBRARY)
 
 endif()
 
-message ("MESSAGE: FindMbedTLS cmake")
-
 if(MBEDTLS_LIBRARIES)
 	check_symbol_exists(mbedtls_ssl_get_dtls_srtp_protection_profile "mbedtls/ssl.h" HAVE_SSL_GET_DTLS_SRTP_PROTECTION_PROFILE)
 endif()
