@@ -38,7 +38,7 @@ unsigned long IOSUtilsApp::beginBackgroundTask(const char *name, std::function<v
             if (cb==nullptr){
                 bctbx_error("belle_sip_begin_background_task(): the callback must not be NULL. Application must be aware that the background task needs to be terminated.");
                 bgid = UIBackgroundTaskInvalid;
-                @throw [NSException new];
+                @throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Background task has no callback" userInfo:nil]);            
             }
 
             void (^handler)() = ^{
@@ -54,7 +54,7 @@ unsigned long IOSUtilsApp::beginBackgroundTask(const char *name, std::function<v
             if (bgid==UIBackgroundTaskInvalid){
                 bctbx_error("Could not start background task %s.", name);
                 bgid = 0;
-                @throw [NSException new];
+		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Could not start background task" userInfo:nil]);
             }
 
             // backgroundTimeRemaining is properly set only when running background... but not immediately!
