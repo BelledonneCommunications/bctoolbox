@@ -1,0 +1,48 @@
+Name: bctoolbox
+Version: @version@
+Release: 1%{?dist}
+Summary: Belledonne communications's toolbox library.
+License: GPLv3
+
+Source0: %{name}-%{version}.tar.xz # FIXME
+
+BuildRequires: meson
+BuildRequires: gcc
+BuildRequires: pkgconfig(threads)
+
+%description
+
+%package devel
+Summary: Development files for %{name}
+Requires: %{name}%{?_isa} = %{?epoch:%{epoch}:}{version}-%{release}
+
+%description devel
+Development files for %{name}.
+
+%prep
+%autosetup
+
+%build
+%meson
+%meson_build
+
+%install
+%meson_install
+rm -vf %{buildroot}%{_libdir}/libbctoolbox.a
+
+%check
+%meson_test
+
+%files
+%{_libdir}/libbctoolbox.so
+
+%files devel
+%{_includedir}/bctoolbox/
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+%changelog
+* Sat Mar 21 2020 meson <meson@example.com> - 
+- 
+
