@@ -617,8 +617,7 @@ size_t VfsEncryption::write(const std::vector<uint8_t> &plainData, size_t offset
 	std::vector<uint8_t> rawData{}; // Store the existing encrypted chunks with header that are overwritten by this operation
 
 	// Are we overwritting some chunks?
-	size_t offsetStep = offset%mChunkSize;
-	size_t readOffset = offset - offsetStep; // we must start read/write at the begining of a chunk
+	size_t readOffset = offset - offset%mChunkSize; // we must start read/write at the begining of a chunk
 
 	if (readOffset<mFileSize) { // Yes we are overwritting some data, read all the existing chunks we are overwritting
 		rawData.resize(rawDataSize);
@@ -628,13 +627,10 @@ size_t VfsEncryption::write(const std::vector<uint8_t> &plainData, size_t offset
 	}
 
 	// prepend the plain buffer if needed
-	if (0 < offsetStep) { // we need to get the plain data from readOffset to offset
+	if (readOffset<offset) { // we need to get the plain data from readOffset to offset
 		// decrypt the first chunk
 		auto plainChunk = m_module->decryptChunk(firstChunk, std::vector<uint8_t>(rawData.cbegin(), rawData.cbegin() + std::min(rawChunkSizeGet(), rawData.size())));
-		if( offsetStep < plainChunk.size())
-			plain.insert(plain.begin(), plainChunk.cbegin(), plainChunk.cbegin()+offsetStep); // prepend the begining to our plain buffer
-		else// Ensure to use cend() to avoid runtime errors
-			plain.insert(plain.begin(), plainChunk.cbegin(), plainChunk.cend());
+		plain.insert(plain.begin(), plainChunk.cbegin(), plainChunk.cbegin()+(offset-readOffset)); // prepend the begining to our plain buffer
 	}
 
 	// append the plain buffer if needed:
