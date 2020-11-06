@@ -168,7 +168,7 @@ function(bc_compute_lib_version OUTPUT_VERSION default_version)
 		# format lib version
 		set(${OUTPUT_VERSION} "${version_major}.${version_minor}.${version_patch}" CACHE STRING "")
 	else()
-		set(${OUTPUT_VERSION} "${default_version}")
+		set(${OUTPUT_VERSION} "${default_version}" CACHE STRING "")
 	endif()
 endfunction()
 
