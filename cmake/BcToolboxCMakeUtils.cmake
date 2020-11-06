@@ -146,6 +146,32 @@ function(bc_parse_full_version version major minor patch)
 	endif()
 endfunction()
 
+function(bc_compute_lib_version OUTPUT_VERSION default_version)
+	find_program(GIT_EXECUTABLE git NAMES Git CMAKE_FIND_ROOT_PATH_BOTH)
+	if(GIT_EXECUTABLE)
+		execute_process(
+			COMMAND "${GIT_EXECUTABLE}" "describe"
+			OUTPUT_VARIABLE GIT_DESCRIBE_VERSION
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			ERROR_QUIET
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		)
+
+		# parse git describe version
+		if (NOT (GIT_DESCRIBE_VERSION MATCHES "^([0-9]+)[.]([0-9]+)[.]([0-9]+)(-alpha|-beta)?(-[0-9]+)?(-g[0-9a-f]+)?$"))
+			message(FATAL_ERROR "invalid git describe version: '${GIT_DESCRIBE_VERSION}'")
+			endif()
+		set(version_major ${CMAKE_MATCH_1})
+		set(version_minor ${CMAKE_MATCH_2})
+		set(version_patch ${CMAKE_MATCH_3})
+
+		# format lib version
+		set(${OUTPUT_VERSION} "${version_major}.${version_minor}.${version_patch}" CACHE STRING "")
+	else()
+		set(${OUTPUT_VERSION} "${default_version}" CACHE STRING "")
+	endif()
+endfunction()
+
 function(bc_compute_full_version OUTPUT_VERSION)
 	find_program(GIT_EXECUTABLE git NAMES Git CMAKE_FIND_ROOT_PATH_BOTH)
 	if(GIT_EXECUTABLE)
