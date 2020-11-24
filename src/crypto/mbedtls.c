@@ -251,8 +251,10 @@ bctbx_list_t *bctbx_x509_certificate_get_subjects(const bctbx_x509_certificate_t
 	
 	for (; subjectAltNames != NULL; subjectAltNames = subjectAltNames->next){
 		const mbedtls_asn1_buf *buf = &subjectAltNames->buf;
-		if (buf->tag == ( MBEDTLS_ASN1_CONTEXT_SPECIFIC | 2 ) || buf->tag == ( MBEDTLS_ASN1_CONTEXT_SPECIFIC | 2 )){
-			ret = bctbx_list_append(ret, bctbx_strndup((char*)buf->p, buf->len));
+		if (buf->tag == ( MBEDTLS_ASN1_CONTEXT_SPECIFIC | 2 ) ){
+			if (buf->p){
+				ret = bctbx_list_append(ret, bctbx_strndup((char*)buf->p, buf->len));
+			}
 		}
 	}
 	
