@@ -17,6 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef BCTBX_UTILS_H
+#define BCTBX_UTILS_H
+
 #include <string>
 #include <vector>
 
@@ -30,6 +33,15 @@ namespace bctoolbox {
 		BCTBX_PUBLIC inline std::vector<std::string> split (const std::string &str, char delimiter) {
 			return split(str, std::string(1, delimiter));
 		}
+
+		template<typename T>
+		inline const T &getEmptyConstRefObject () {
+			static const T object{};
+			return object; 
+		}
+
 	}
 
 }
+
+#endif /* BCTBX_UTILS_H */
