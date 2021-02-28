@@ -73,6 +73,7 @@ bool_t bctbx_param_string_get_value(const char *paramString, const char *param_n
 
 bool_t bctbx_param_string_get_bool_value(const char *paramString, const char *param_name)
 {
+	if (paramString == NULL || strcmp(paramString, "") == 0) return FALSE;
 	size_t result_len = 5;
 	char *result = bctbx_malloc(result_len);
 	// True if param is found, false if not
