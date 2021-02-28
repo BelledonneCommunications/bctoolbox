@@ -116,6 +116,9 @@ static int (*verbose_arg_func)(const char *arg) = NULL;
 static int (*silent_arg_func)(const char *arg) = NULL;
 static int (*logfile_arg_func)(const char *arg) = NULL;
 
+//Processing custom native events for processing events (like PeekMessage for Windows) that is not implemented by Linphone 
+static void (*process_events)(void) = NULL;
+
 void bc_tester_set_silent_func(int (*func)(const char*)) {
 	if (func) {
 		silent_arg_func = func;
@@ -132,6 +135,15 @@ void bc_tester_set_logfile_func(int (*func)(const char*)) {
 	if (func) {
 		logfile_arg_func = func;
 	}
+}
+
+void bc_tester_set_process_events_func(void (*func)(void)) {
+	process_events = func;
+}
+
+void bc_tester_process_events(){
+	if( process_events)
+		process_events();
 }
 
 static void (*tester_printf_va)(int level, const char *format, va_list args)=NULL;
@@ -556,31 +568,36 @@ void merge_junit_xml_files(const char *dst_file_name) {
 			if (read_bytes == file_size) {
 				total_size += file_size;
 				suite_junit_xml_results[i][file_size] = '\0';
+				//Also remove the file
+				bctbx_file_close(bctbx_file);
+				remove(file_name);
 			} else {
 				bc_tester_printf(bc_printf_verbosity_error, "Could not read JUnit XML file '%s' to merge", file_name);
 				bctbx_free(suite_junit_xml_results[i]);
 				suite_junit_xml_results[i] = NULL;
+				bctbx_file_close(bctbx_file);
 			}
 		} else {
 			bc_tester_printf(bc_printf_verbosity_error, "Could not open JUnit XML file '%s' to merge", file_name);
+			suite_junit_xml_results[i] = NULL;
+			bctbx_file_close(bctbx_file);
 		}
-		bctbx_file_close(bctbx_file);
-		//Also remove the file
-		remove(file_name);
 		bctbx_free(file_name);
 	}
 	//Empty the destination file
 	bctbx_file = bctbx_file_open(bctbx_vfs_get_default(), dst_file_name, "w+");
-	bctbx_file_truncate(bctbx_file, 0);
-	offset = bctbx_file_fprintf(bctbx_file, 0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuites>\n");
-	for (i = 0; i < nb_test_suites; i++) {
-		if (suite_junit_xml_results[i] != NULL) {
-			offset += bctbx_file_fprintf(bctbx_file, offset, suite_junit_xml_results[i]);
-			bctbx_free(suite_junit_xml_results[i]);
+	if(bctbx_file){
+		bctbx_file_truncate(bctbx_file, 0);
+		offset = bctbx_file_fprintf(bctbx_file, 0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuites>\n");
+		for (i = 0; i < nb_test_suites; i++) {
+			if (suite_junit_xml_results[i] != NULL) {
+				offset += bctbx_file_fprintf(bctbx_file, offset, suite_junit_xml_results[i]);
+				bctbx_free(suite_junit_xml_results[i]);
+			}
 		}
+		bctbx_file_fprintf(bctbx_file, offset, "</testsuites>\n");
+		bctbx_file_close(bctbx_file);
 	}
-	bctbx_file_fprintf(bctbx_file, offset, "</testsuites>\n");
-	bctbx_file_close(bctbx_file);
 	bctbx_free(suite_junit_xml_results);
 }
 
@@ -601,7 +618,7 @@ void merge_log_files(const char *base_logfile_name) {
 	for (i = 0; i < nb_test_suites; ++i) {
 		char *suite_logfile_name = get_logfile_name(log_file_name, test_suite[i]->name);
 		bctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), suite_logfile_name, O_RDONLY);
-
+		
 		if (!bctbx_file) {
 			bc_tester_printf(bc_printf_verbosity_error, "Could not open log file '%s' to merge into '%s'", suite_logfile_name, base_logfile_name);
 			continue;
@@ -653,8 +670,72 @@ void kill_sub_processes(int *pids) {
 #endif
 
 #ifdef _WIN32
-int start_sub_process(const char *suite_name) {
-	//TODO Windows support
+
+//Start	test subprocess for the given suite
+int start_sub_process(const char *suite_name, PROCESS_INFORMATION * pi) {
+	int argc = 0;
+	int i;
+	//const char *argv[origin_argc + 10]; //Assume safey 10 more parameters
+	char * commandLine = bctbx_strdup(origin_argv[0]);
+	char * commandLineTemp = NULL;
+	bool_t propagateXmlFileSetter = TRUE;
+	bool_t propagateLogFileSetter = log_file_name!=NULL;// Log file has not been set : Don't propagate it
+
+	for (i = 1; origin_argv[i]; ++i) {
+		if (strcmp(origin_argv[i], "--xml-file") == 0) {
+			propagateXmlFileSetter = FALSE;
+		}
+		if (strcmp(origin_argv[i], "--log-file") == 0) {
+			//Create a specific log file for this suite
+			commandLineTemp = commandLine;
+			commandLine = bc_sprintf("%s %s \"%s\"", commandLineTemp, origin_argv[i], get_logfile_name(log_file_name, suite_name) );
+			bctbx_free(commandLineTemp);
+			propagateLogFileSetter = FALSE;
+			++i;
+		} else {
+			//Keep other parameters
+			commandLineTemp = commandLine;
+			commandLine = bc_sprintf("%s %s", commandLineTemp, origin_argv[i] );
+			bctbx_free(commandLineTemp);
+		}
+	}
+	commandLineTemp = commandLine;
+	commandLine = bc_sprintf("%s --xml --child --suite \"%s\"", commandLineTemp, suite_name);
+	bctbx_free(commandLineTemp);
+	if( propagateXmlFileSetter){// Add current xml_file to child commands
+		commandLineTemp = commandLine;
+		commandLine = bc_sprintf("%s --xml-file \"%s\"", commandLineTemp, xml_file);
+		bctbx_free(commandLineTemp);
+	}
+	if(propagateLogFileSetter){
+		commandLineTemp = commandLine;
+		commandLine = bc_sprintf("%s --log-file \"%s\"", commandLineTemp, get_logfile_name(log_file_name, suite_name) );
+		bctbx_free(commandLineTemp);
+	}
+	
+	// Start the child process.
+	STARTUPINFOA si;
+
+	ZeroMemory( &si, sizeof(si) );
+	si.cb = sizeof(si);
+	ZeroMemory( pi, sizeof(*pi) );
+	if( !CreateProcessA( NULL,   // No module name (use command line)
+		commandLine,        // Command line
+		NULL,           // Process handle not inheritable
+		NULL,           // Thread handle not inheritable
+		FALSE,          // Set handle inheritance to FALSE
+		0,//CREATE_NEW_CONSOLE,              // No creation flags
+		NULL,           // Use parent's environment block
+		NULL,           // Use parent's starting directory
+		&si,            // Pointer to STARTUPINFO structure
+		pi )           // Pointer to PROCESS_INFORMATION structure
+    )
+    {
+        printf( "CreateProcess failed (%d).\n", GetLastError() );
+        return GetLastError();
+    }
+	bctbx_free(commandLine);
+
 	return 0;
 }
 
@@ -725,9 +806,81 @@ int handle_sub_process_error(int pid, int exitStatus, int *suitesPids) {
 }
 
 #ifdef _WIN32
-//TODO Windows support
 int bc_tester_run_parallel(void) {
-	return 0;
+	int ret = 0; //Global return status;
+	if( nb_test_suites > 0){
+		PROCESS_INFORMATION * suitesPids = malloc(nb_test_suites * sizeof( PROCESS_INFORMATION));
+		int *processed = malloc(nb_test_suites * sizeof(int));
+		uint64_t time_start = bctbx_get_cur_time_ms(), elapsed = time_start, print_timer = time_start;
+
+		//Assume there is a problem if a suite is still running 60mn after the start of the tester. TODO make timeout	a cli parameter ?
+		uint64_t timeout = 0;
+		if (globalTimeout <= 0) {
+				globalTimeout = 60;
+		}
+		timeout = time_start + (globalTimeout * 60 * 1000);
+
+
+		int maxProcess = bc_tester_get_max_parallel_processes();
+		int nextSuite = 0; //Next suite id to be exec'd
+		int runningSuites = 0; //Number of currently running suites
+		int testsFinished = 0;
+
+		memset(suitesPids, 0, nb_test_suites*sizeof(PROCESS_INFORMATION));
+		memset(processed, 0, nb_test_suites*sizeof(int));
+		do {
+			if (nextSuite < nb_test_suites && runningSuites < maxProcess) {
+				PROCESS_INFORMATION pi;
+
+				if (start_sub_process(test_suite[nextSuite]->name, &pi) != 0) {
+					bc_tester_printf(bc_printf_verbosity_error, "Error while starting suite sub-process. Aborting.");
+					return -1;
+				}
+				suitesPids[nextSuite] = pi;
+				runningSuites++;
+				nextSuite++;
+			}else{
+				for(int i = 0 ;  i < nextSuite ; ++i){
+					if( processed[i] == 0){
+						int returnCode = WaitForSingleObject( suitesPids[i].hProcess, 1000 );
+						if( ( returnCode != WAIT_TIMEOUT)){
+							--runningSuites;
+							++testsFinished;
+							bc_tester_printf(bc_printf_verbosity_error, "Suite sub process (ID %d) terminated with return code %d.", i, returnCode);
+							processed[i] = 1;
+						}
+					}
+				}
+			}
+			bctbx_sleep_ms(50);
+			if (elapsed - print_timer > 10000) { //print message only every ~10s...
+				bc_tester_printf(bc_printf_verbosity_error, "Waiting for test suites to finish... Total Suites(%d). Suites running(%d), Finished(%d)", nb_test_suites, runningSuites, testsFinished);
+				print_timer = bctbx_get_cur_time_ms();
+			}
+			elapsed = bctbx_get_cur_time_ms();
+		} while (testsFinished < nb_test_suites && elapsed < timeout);
+
+		if (elapsed >= timeout) {
+			bc_tester_printf(bc_printf_verbosity_error, "Stopped waiting for all test suites to execute as we reach timeout. Killing running suites.");
+			for(int i = 0 ;  i < nextSuite ; ++i){
+				if( processed[i] == 0)
+					TerminateProcess(suitesPids[i].hProcess, -1);
+			}
+		}
+		for(int i = 0 ;  i < nextSuite ; ++i){
+			CloseHandle( suitesPids[i].hProcess );
+			CloseHandle( suitesPids[i].hThread );
+		}
+		bc_tester_printf(bc_printf_verbosity_info, "All suites ended.");
+		all_complete_message_handler(NULL);
+		{
+			int seconds = (int)(elapsed - time_start)/1000;
+			bc_tester_printf(bc_printf_verbosity_info, "Full parallel run completed in %2i mn %2i s.\n", seconds/60, seconds % 60);
+		}
+		free( suitesPids);
+		free( processed);
+	}
+	return ret;
 }
 #else
 
@@ -833,7 +986,7 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name, const cha
 	CU_set_suite_cleanup_failure_handler(suite_cleanup_failure_message_handler);
 
 	if (xml_enabled == 1) {
-		char *xml_file_name;
+		char *xml_file_name;//, *xml_file_name_tmp;
 		CU_automated_enable_junit_xml(TRUE); /* this requires 3.0.1 because previous versions crash automated.c */
 
 		if (run_in_parallel != 0) {
@@ -1115,6 +1268,7 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 			 "\t\t\t--max-alloc <size in ko> (maximum amount of memory obtained via malloc allocator)\n"
 			 "\t\t\t--max-alloc <size in ko> (maximum amount of memory obtained via malloc allocator)\n"
 			 "\t\t\t--parallel (Execute tests concurrently and with JUnit report)\n"
+			 "\t\t\t--parallel-max (Number Max of parallel processes)\n"
 			 "\t\t\t--timeout <timeout in minutes> (sets the global timeout when used alongside to the parallel option, the default value is 60)\n"
 			 "And additionally:\n"
 			 "%s",
@@ -1127,7 +1281,7 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	int ret = 0;
 	int i = argid;
 
-	if (strcmp(argv[i],"--help")==0){
+	if (strcmp(argv[i],"--help")==0 || strcmp(argv[i],"--child")==0){
 		return -1;
 	} else if (strcmp(argv[i],"--log-file")==0) {
 		CHECK_ARG("--log-file", ++i, argc);
@@ -1174,6 +1328,9 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 		//Defaults to JUnit report if parallel is enabled
 		xml_enabled = 1;
 		run_in_parallel = 1;
+	} else if (strcmp(argv[i], "--parallel-max") == 0) {
+		CHECK_ARG("--parallel-max", ++i, argc);
+		bc_tester_set_max_parallel_suites(atoi(argv[i]));
 	} else if (strcmp(argv[i], "--timeout") == 0) {
 		CHECK_ARG("--timeout", ++i, argc);
 		globalTimeout = atoi(argv[i]);
