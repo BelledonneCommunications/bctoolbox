@@ -182,7 +182,13 @@ typedef  unsigned int uint32_t;
 typedef  int int32_t;
 typedef  unsigned char uint8_t;
 typedef __int16 int16_t;
+
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#else
 typedef long ssize_t;
+#endif
+
 #else
 #include <stdint.h> /*provided by mingw32*/
 #include <io.h>
