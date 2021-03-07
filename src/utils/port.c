@@ -26,6 +26,7 @@
 #include "bctoolbox/port.h"
 #include "bctoolbox/vconnect.h"
 #include "bctoolbox/list.h"
+#include "bctoolbox/charconv.h"
 #include "utils.h"
 
 #if	defined(_WIN32) && !defined(_WIN32_WCE)
@@ -110,7 +111,7 @@ char * bctbx_strdup(const char *tmp){
 char * bctbx_dirname(const char *path) {
 	char *ptr = strrchr(path, '/');
 	if (ptr == NULL) ptr = strrchr(path, '\\');
-	return ptr ? bctbx_strndup(path, ptr-path) : bctbx_strdup(".");
+	return ptr ? bctbx_strndup(path, (int) (ptr-path)) : bctbx_strdup(".");
 }
 
 char * bctbx_basename(const char *path) {
@@ -513,13 +514,20 @@ static char *make_pipe_name(const char *name){
 
 static HANDLE event=NULL;
 
-/* portable named pipes */
+
 bctbx_pipe_t bctbx_server_pipe_create(const char *name){
 #ifdef BCTBX_WINDOWS_DESKTOP
 	bctbx_pipe_t h;
 	char *pipename=make_pipe_name(name);
+#ifdef BCTBX_WINDOWS_UWP
+	wchar_t * wPipename = bctbx_string_to_wide_string(pipename);
+	h=CreateNamedPipe(wPipename,PIPE_ACCESS_DUPLEX|FILE_FLAG_OVERLAPPED,PIPE_TYPE_MESSAGE|PIPE_WAIT,1,
+						32768,32768,0,NULL);
+	bctbx_free(wPipename);
+#else
 	h=CreateNamedPipe(pipename,PIPE_ACCESS_DUPLEX|FILE_FLAG_OVERLAPPED,PIPE_TYPE_MESSAGE|PIPE_WAIT,1,
 						32768,32768,0,NULL);
+#endif	
 	bctbx_free(pipename);
 	if (h==INVALID_HANDLE_VALUE){
 		bctbx_error("Fail to create named pipe %s",pipename);
@@ -581,7 +589,7 @@ int bctbx_server_pipe_close(bctbx_pipe_t spipe){
 }
 
 bctbx_pipe_t bctbx_client_pipe_connect(const char *name){
-#ifdef BCTBX_WINDOWS_DESKTOP
+#if defined(BCTBX_WINDOWS_DESKTOP)  && !defined(BCTBX_WINDOWS_UWP)
 	char *pipename=make_pipe_name(name);
 	bctbx_pipe_t hpipe = CreateFile(
 		 pipename,   // pipe name
@@ -631,11 +639,17 @@ static bctbx_list_t *maplist=NULL;
 
 void *bctbx_shm_open(unsigned int keyid, int size, int create){
 #ifdef BCTBX_WINDOWS_DESKTOP
-	HANDLE h;
-	char name[64];
+	HANDLE h;	
 	void *buf;
-
+#ifdef BCTBX_WINDOWS_UWP
+	char nameBuf[64];
+	snprintf(nameBuf,sizeof(nameBuf),"%x",keyid);
+	wchar_t * name = bctbx_string_to_wide_string(nameBuf);
+#else
+	char name[64];
 	snprintf(name,sizeof(name),"%x",keyid);
+#endif
+
 	if (create){
 		h = CreateFileMapping(
 			INVALID_HANDLE_VALUE,    // use paging file
@@ -668,6 +682,9 @@ void *bctbx_shm_open(unsigned int keyid, int size, int create){
 		CloseHandle(h);
 		bctbx_error("MapViewOfFile failed");
 	}
+#ifdef BCTBX_WINDOWS_UWP
+	bctbx_free(name);
+#endif
 	return buf;
 #else
 	bctbx_error("%s not supported!", __FUNCTION__);
@@ -705,7 +722,7 @@ void bctbx_shm_close(void *mem){
 
 void _bctbx_get_cur_time(bctoolboxTimeSpec *ret, bool_t realtime){
 #if defined(_WIN32_WCE) || defined(WIN32)
-#if defined(BCTBX_WINDOWS_DESKTOP) && !defined(ENABLE_MICROSOFT_STORE_APP)
+#if defined(BCTBX_WINDOWS_DESKTOP) && !defined(ENABLE_MICROSOFT_STORE_APP) && !defined(BCTBX_WINDOWS_UWP)
 	DWORD timemillis;
 #	if defined(_WIN32_WCE)
 	timemillis=GetTickCount();
