@@ -106,6 +106,7 @@ static int run_skipped_tests = 0;
 static int max_parallel_suites = 0; /*if 0, but parallel is requested, an arbitrary value is determined.*/
 static int run_in_parallel = 0;
 static uint64_t globalTimeout = 0;
+static int max_failed_tests_threshold = 0;
 
 //To keep record of the process name who started and args
 static char **origin_argv = NULL;
@@ -649,6 +650,14 @@ void bc_tester_set_max_parallel_suites(int nb_suites){
 	max_parallel_suites = nb_suites;
 }
 
+void bc_tester_set_max_failed_tests_threshold(int threshold){
+	max_failed_tests_threshold = threshold;
+}
+
+void bc_tester_set_global_timeout(int seconds){
+	globalTimeout = seconds * 1000;
+}
+
 #ifdef _WIN32
 
 void kill_sub_processes(int *pids) {
@@ -1071,7 +1080,7 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name, const cha
 			 mallinfo().uordblks / 1024);
 #endif
 
-	return CU_get_number_of_tests_failed()!=0;
+	return (int)CU_get_number_of_tests_failed() > (int)max_failed_tests_threshold;
 
 }
 
