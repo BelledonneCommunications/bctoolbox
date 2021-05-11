@@ -1303,7 +1303,7 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	int ret = 0;
 	int i = argid;
 
-	if (strcmp(argv[i],"--help")==0 || strcmp(argv[i],"--child")==0){
+	if (strcmp(argv[i],"--help")==0){
 		return -1;
 	} else if (strcmp(argv[i],"--log-file")==0) {
 		CHECK_ARG("--log-file", ++i, argc);
@@ -1365,6 +1365,7 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	} else if (strcmp(argv[i], "--writable-dir") == 0) {
 		CHECK_ARG("--writable-dir", ++i, argc);
 		bc_tester_writable_dir_prefix = strdup(argv[i]);
+	}else if(strcmp(argv[i],"--child")==0){//Switch off this parameter as it is used for external processing
 	} else {
 		bc_tester_printf(bc_printf_verbosity_error, "Unknown option \"%s\"", argv[i]);
 		return -1;
