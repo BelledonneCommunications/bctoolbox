@@ -20,8 +20,9 @@
 #
 ############################################################################
 
-cmake_minimum_required(VERSION 3.2)
-set(CMAKE_MACOSX_RPATH ON) # Before cmake 3.0.0, MACOSX_RPATH was not set to ON by default - however this is no good reason to not enable it by default
+# CMake 3.13 required for new Flexisip build process.
+# See [CMP077](https://cmake.org/cmake/help/v3.13/policy/CMP0077.html).
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
 project(bctoolbox VERSION 4.5.0)
 
@@ -108,7 +109,7 @@ if(POLARSSL_FOUND)
 	set(LIBS_PRIVATE "${LIBS_PRIVATE} -L${polarssl_library_path} -lpolarssl")
 endif()
 
-if(ENABLE_TESTS_COMPONENT)
+if(ENABLE_TESTS_COMPONENT AND NOT DISABLE_BC_PACKAGE_SEARCH)
   find_package(BcUnit CONFIG REQUIRED)
   cmake_push_check_state(RESET)
 	list(APPEND CMAKE_REQUIRED_INCLUDES ${BCUNIT_INCLUDE_DIRS})
