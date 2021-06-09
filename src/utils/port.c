@@ -1745,7 +1745,7 @@ void bctbx_uint32_to_str(uint8_t output_string[9], uint32_t input_uint32) {
 	output_string[8] = '\0';
 }
 
-uint32_t bctbx_str_to_uint32(const uint8_t *input_string) {
+uint32_t bctbx_str_to_uint32(const uint8_t input_string[9]) {
 	return  (((uint32_t)bctbx_char_to_byte(input_string[0]))<<28)
 		| (((uint32_t)bctbx_char_to_byte(input_string[1]))<<24)
 		| (((uint32_t)bctbx_char_to_byte(input_string[2]))<<20)
