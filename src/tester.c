@@ -810,9 +810,9 @@ int bc_tester_run_parallel(void) {
 		//Assume there is a problem if a suite is still running 60mn after the start of the tester. TODO make timeout	a cli parameter ?
 		uint64_t timeout = 0;
 		if (globalTimeout <= 0) {
-				globalTimeout = 60;
+				globalTimeout = 60 * 60;
 		}
-		timeout = time_start + (globalTimeout * 60 * 1000);
+		timeout = time_start + (globalTimeout * 1000);
 
 
 		int maxProcess = bc_tester_get_max_parallel_processes();
@@ -885,9 +885,9 @@ int bc_tester_run_parallel(void) {
 	//Assume there is a problem if a suite is still running 60mn after the start of the tester. TODO make timeout	a cli parameter ?
 	uint64_t timeout = 0;
 	if (globalTimeout <= 0) {
-			globalTimeout = 60;
+			globalTimeout = 60 * 60;
 	}
-	timeout = time_start + (globalTimeout * 60 * 1000);
+	timeout = time_start + (globalTimeout * 1000);
 
 
 	int maxProcess = bc_tester_get_max_parallel_processes();
