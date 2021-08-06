@@ -258,6 +258,7 @@ void bctbx_qnx_log_handler(const char *domain, BctbxLogLevel lev, const char *fm
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 #if !defined(_WIN32) && !defined(__QNX__)
 #include <syslog.h>
@@ -305,27 +306,53 @@ namespace bctoolbox {
 
 #include <ostream>
 
-class pumpstream : public std::ostringstream {
+class pumpstream {
 public:
 	/*contructor used to disable logging*/
-	pumpstream():mDomain(""),mLevel(BCTBX_LOG_DEBUG),mTraceEnabled(false){}
-	pumpstream(const char *domain, BctbxLogLevel level) : mDomain(domain ? domain : ""), mLevel(level),mTraceEnabled(true) {}
+	pumpstream() : mDomain(""), mLevel(BCTBX_LOG_DEBUG), mTraceEnabled(false) {
+		mIslogLevelEnabled = bctbx_log_level_enabled("", mLevel);
+	}
+	pumpstream(const char* domain, BctbxLogLevel level)
+	    : mDomain(domain ? domain : ""), mLevel(level), mTraceEnabled(true) {
+		mIslogLevelEnabled = bctbx_log_level_enabled(domain, mLevel);
+	}
 	~pumpstream() {
-		const char *domain = mDomain.empty() ? NULL : mDomain.c_str();
-		if (mTraceEnabled && bctbx_log_level_enabled(domain, mLevel))
-			bctbx_log(domain, mLevel, "%s", str().c_str());
+		const char* domain = mDomain.empty() ? nullptr : mDomain.c_str();
+		if (mTraceEnabled && mIslogLevelEnabled)
+			bctbx_log(domain, mLevel, "%s", mOstringstream.str().c_str());
 	}
 
+	template <typename _Tp> friend pumpstream& operator<<(pumpstream& __os, _Tp&& __x);
+	template <typename _Tp> friend pumpstream& operator<<(pumpstream&& __os, _Tp&& __x);
+	friend pumpstream& operator<<(pumpstream& __os, std::ostream& (*pf)(std::ostream&));
+
 private:
+	std::ostringstream mOstringstream{};
+	bool mIslogLevelEnabled = false;
 	const std::string mDomain;
 	const BctbxLogLevel mLevel;
 	const bool mTraceEnabled;
 };
 
+inline pumpstream& operator<<(pumpstream& pumpStream, std::ostream& (*pf)(std::ostream&)) {
+	if(pumpStream.mIslogLevelEnabled) {
+		pumpStream.mOstringstream << pf;
+	}
+    return pumpStream;
+}
 
-template <typename _Tp> inline pumpstream &operator<<(pumpstream &&__os, const _Tp &__x) {
-	(static_cast<std::ostringstream &>(__os)) << __x;
-	return __os;
+template <typename T> inline pumpstream& operator<<(pumpstream& pumpStream, T&& x) {
+    if(pumpStream.mIslogLevelEnabled) {
+		pumpStream.mOstringstream << std::forward<T>(x);
+	}
+	return pumpStream;
+}
+
+template <typename T> inline pumpstream& operator<<(pumpstream&& pumpStream, T&& x) {
+    if(pumpStream.mIslogLevelEnabled) {
+		pumpStream.mOstringstream << std::forward<T>(x);
+	}
+	return pumpStream;
 }
 
 #define BCTBX_SLOG(domain, thelevel) pumpstream(domain, thelevel)
