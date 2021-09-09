@@ -25,10 +25,10 @@ std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string password, const std::
     const std::vector<uint8_t> S(salt.begin(), salt.end());
     std::vector<uint8_t> DK;
     std::vector<uint8_t> T;
-    uint32_t hLen = 256;
-    for(uint32_t i = 0 ; i < (dkLen/hLen) ; i++){
+    size_t hLen = 256;
+    for(uint32_t i = 1 ; i <= (uint8_t)(dkLen/hLen) ; i++){
         T = F(P, S, c, i);
-        if(i == 0){
+        if(i == 1){
             DK = T;
         } else {
             DK.insert(DK.end(), T.begin(), T.end());
