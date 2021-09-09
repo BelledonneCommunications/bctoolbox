@@ -6,8 +6,9 @@ static std::vector<uint8_t> F(const std::vector<uint8_t>& password,std::vector<u
     std::vector<uint8_t> Ures;
     for(int j = 0 ; j < c ; j++){
         if(j == 0){
-            const std::vector<std::uint8_t> vector_i((std::uint8_t*)&i, (std::uint8_t*)&(i) + sizeof(std::uint32_t));
-            salt.insert(salt.end(), vector_i.begin(), vector_i.end());
+            for(int k = 3 ; k >= 0 ; k--){
+                salt.insert(salt.end(), (uint8_t)i>>(k*8));
+            }
             U = bctoolbox::HMAC<bctoolbox::SHA256>(password, salt);
             Ures = U;
         } else {
