@@ -994,6 +994,21 @@ static void AEAD(void) {
 	BC_ASSERT_TRUE(plain==pattern_plain);
 }
 
+static void PBKDF2_HMAC_SHA_256_basic_test(void) {
+    std::string p = "password";
+    std::string s = "salt";
+    int c = 1;
+    size_t dkLen = 32;
+
+    std::vector<uint8_t> res = PBKDF2_HMAC_SHA_256(p, s, c, dkLen);
+    std::vector<uint8_t> excp {0x12, 0x0f, 0xb6, 0xcf, 0xfc, 0xf8, 0xb3, 0x2c,
+                0x43, 0xe7, 0x22, 0x52, 0x56, 0xc4, 0xf8, 0x37,
+                0xa8, 0x65, 0x48, 0xc9, 0x2c, 0xcc, 0x35, 0x48,
+                0x08, 0x05, 0x98, 0x7c, 0xb7, 0x0b, 0xe1, 0x7b};
+
+    BC_ASSERT_TRUE(excp == res);
+}
+
 static void PBKDF2_HMAC_SHA_256_test(void) {
     std::string p = "passwd";
     std::string s = "salt";
@@ -1035,6 +1050,7 @@ static test_t crypto_tests[] = {
 	TEST_NO_TAG("Hash functions", hash_test),
 	TEST_NO_TAG("RNG", rng_test),
 	TEST_NO_TAG("AEAD", AEAD),
+    TEST_NO_TAG("PBKDF2_HMAC_SHA_256_basic", PBKDF2_HMAC_SHA_256_basic_test),
     TEST_NO_TAG("PBKDF2_HMAC_SHA_256", PBKDF2_HMAC_SHA_256_test),
     TEST_NO_TAG("PBKDF2_HMAC_SHA_256_2", PBKDF2_HMAC_SHA_256_2_test),
 };

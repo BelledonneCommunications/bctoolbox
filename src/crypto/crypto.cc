@@ -1,4 +1,5 @@
 #include <bctoolbox/crypto.hh>
+#include <iostream>
 
 static std::vector<uint8_t> F(const std::vector<uint8_t>& password,std::vector<uint8_t> salt, int c, uint32_t i){
     std::vector<uint8_t> U;
@@ -24,9 +25,14 @@ std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string password, const std::
     const std::vector<uint8_t> P(password.begin(), password.end());
     const std::vector<uint8_t> S(salt.begin(), salt.end());
     std::vector<uint8_t> DK;
+    std::vector<uint8_t> DKres;
     std::vector<uint8_t> T;
+    std::vector<uint8_t>::const_iterator first;
+    std::vector<uint8_t>::const_iterator last;
     size_t hLen = 256;
-    for(uint32_t i = 1 ; i <= (uint8_t)(dkLen/hLen) ; i++){
+    uint32_t stop = (uint32_t)(dkLen/hLen);
+    if(dkLen%hLen != 0) stop++;
+    for(uint32_t i = 1 ; i <= stop ; i++){
         T = F(P, S, c, i);
         if(i == 1){
             DK = T;
@@ -34,5 +40,8 @@ std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string password, const std::
             DK.insert(DK.end(), T.begin(), T.end());
         }
     }
-    return DK;
+    first = DK.begin();
+    last = DK.begin() + dkLen;
+    DKres.assign(first, last);
+    return DKres;
 }
