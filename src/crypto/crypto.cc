@@ -30,7 +30,7 @@ std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string password, const std::
     std::vector<uint8_t> T;
     std::vector<uint8_t>::const_iterator first;
     std::vector<uint8_t>::const_iterator last;
-    size_t hLen = 256;
+    size_t hLen = 32;
     uint32_t stop = (uint32_t)(dkLen/hLen);
     if(dkLen%hLen != 0) stop++;
     for(uint32_t i = 1 ; i <= stop ; i++){
