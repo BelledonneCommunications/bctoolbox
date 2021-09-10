@@ -28,9 +28,7 @@ static vector<uint8_t> F(const vector<uint8_t>& password, vector<uint8_t> salt, 
 
     for(int j = 1 ; j < c ; j++){
         U = HMAC<bctoolbox::SHA256>(password, U);
-        for(size_t l = 0 ; l < Ures.size() ; l++){
-            Ures.at(l) ^= U.at(l);
-        }
+        transform(Ures.begin(), Ures.end(), U.begin(), Ures.begin(), bit_xor<uint8_t>{});
     }
     return Ures;
 }
