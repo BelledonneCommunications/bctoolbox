@@ -1,4 +1,5 @@
 #include <bctoolbox/crypto.hh>
+#include <bctoolbox/crypto.h>
 
 using namespace std;
 
@@ -34,33 +35,28 @@ static vector<uint8_t> F(const vector<uint8_t>& password, vector<uint8_t> salt, 
 }
 
 
-vector<uint8_t> PBKDF2_HMAC_SHA_256(const string password, const string salt, int c, size_t dkLen){
-    const vector<uint8_t> P(password.begin(), password.end());
-    const vector<uint8_t> S(salt.begin(), salt.end());
+vector<uint8_t> PBKDF2_HMAC_SHA_256(const string& password, const string& salt, int c, size_t dkLen){
+    vector<uint8_t> P(password.begin(), password.end());
+    vector<uint8_t> S(salt.begin(), salt.end());
     vector<uint8_t> DK{};
-    vector<uint8_t> DKres{};
     vector<uint8_t> T{};
     vector<uint8_t>::const_iterator first;
     vector<uint8_t>::const_iterator last;
-    //Output size of the HMAC-SHA-256 function
-    size_t hLen = 32;
-    uint32_t stop = (uint32_t)(dkLen/hLen);
 
-    //if hLen doesn't divide dkLen
-    //Iterate once again
-    if(dkLen%hLen != 0) stop++;
-
-    for(uint32_t i = 1 ; i <= stop ; i++){
+    uint32_t i = 1;
+    while(DK.size() < dkLen){
         T = F(P, S, c, i);
         DK.insert(DK.end(), T.begin(), T.end());
+        i++;
     }
 
-    //Resize DK to dkLen size
-    first = DK.begin();
-    last = DK.begin() + dkLen;
-    DKres.assign(first, last);
+    bctbx_clean(P.data(), P.size());
+    bctbx_clean(S.data(), S.size());
 
-    return DKres;
+    //Resize DK to dkLen size
+    DK.resize(dkLen);
+
+    return DK;
 }
 
 } // namespace bctoolbox

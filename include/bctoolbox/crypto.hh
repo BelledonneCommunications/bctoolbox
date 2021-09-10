@@ -227,7 +227,7 @@ template <> bool AEADDecrypt<AES256GCM128>(const std::vector<uint8_t> &key, cons
  *
  * @return  The generated derived key
  */
-std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string password, const std::string salt, int c, size_t dkLen);
+std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string& password, const std::string& salt, int c, size_t dkLen);
 
 } // namespace bctoolbox
 #endif // BCTBX_CRYPTO_HH
