@@ -230,7 +230,7 @@ template <> bool AEADDecrypt<AES256GCM128>(const std::vector<uint8_t> &key, cons
 template <typename hashAlgo>
 std::vector<uint8_t> PBKDF2(const std::string &password, const std::string &salt, int c, size_t dkLen);
 
-/* declare template specialisations */
+/* declare template instanciations */
 extern template std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 extern template std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 extern template std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);

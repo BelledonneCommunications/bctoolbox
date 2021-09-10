@@ -23,7 +23,7 @@ static vector<uint8_t> F(const vector<uint8_t>& password, vector<uint8_t> salt, 
     /* for j == 0 */
     //Concatenate salt with i in order of big endian
     for(int k = 3 ; k >= 0 ; k--){
-        salt.insert(salt.end(), (uint8_t)i>>(k*8));
+        salt.push_back((i>>(k*8))&0xFF);
     }
     U = HMAC<hashAlgo>(password, salt);
     Ures = U;
