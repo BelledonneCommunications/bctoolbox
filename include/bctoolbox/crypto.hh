@@ -215,7 +215,19 @@ template <> std::vector<uint8_t> AEADEncrypt<AES256GCM128>(const std::vector<uin
 template <> bool AEADDecrypt<AES256GCM128>(const std::vector<uint8_t> &key, const std::vector<uint8_t> &IV, const std::vector<uint8_t> &cipher, const std::vector<uint8_t> &AD,
 		const std::vector<uint8_t> &tag, std::vector<uint8_t> &plain);
 
+
+/************************ PBKDF2 interface ************************/
+/**
+ * @brief Key derivation function using HMAC-SHA-256
+ *
+ * @param[in]   password    Word from which the derived key is generated
+ * @param[in]   salt        Cryptographic key
+ * @param[in]   c           Number of iterations
+ * @param[in]   dkLen       Desired bit-lenght of the derived key
+ *
+ * @return  The generated derived key
+ */
+std::vector<uint8_t> PBKDF2_HMAC_SHA_256(const std::string& password, const std::string& salt, int c, size_t dkLen);
+
 } // namespace bctoolbox
 #endif // BCTBX_CRYPTO_HH
-
-
