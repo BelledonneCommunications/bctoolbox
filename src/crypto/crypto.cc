@@ -37,9 +37,9 @@ static vector<uint8_t> F(const vector<uint8_t>& password, vector<uint8_t> salt, 
 vector<uint8_t> PBKDF2_HMAC_SHA_256(const string password, const string salt, int c, size_t dkLen){
     const vector<uint8_t> P(password.begin(), password.end());
     const vector<uint8_t> S(salt.begin(), salt.end());
-    vector<uint8_t> DK;
-    vector<uint8_t> DKres;
-    vector<uint8_t> T;
+    vector<uint8_t> DK{};
+    vector<uint8_t> DKres{};
+    vector<uint8_t> T{};
     vector<uint8_t>::const_iterator first;
     vector<uint8_t>::const_iterator last;
     //Output size of the HMAC-SHA-256 function
@@ -50,10 +50,7 @@ vector<uint8_t> PBKDF2_HMAC_SHA_256(const string password, const string salt, in
     //Iterate once again
     if(dkLen%hLen != 0) stop++;
 
-    /* for i == 1 */
-    DK = F(P, S, c, 1);
-
-    for(uint32_t i = 2 ; i <= stop ; i++){
+    for(uint32_t i = 1 ; i <= stop ; i++){
         T = F(P, S, c, i);
         DK.insert(DK.end(), T.begin(), T.end());
     }
