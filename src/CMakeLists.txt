@@ -34,6 +34,7 @@ set(BCTOOLBOX_C_SOURCE_FILES
 set(BCTOOLBOX_CXX_SOURCE_FILES
 	containers/map.cc
 	conversion/charconv_encoding.cc
+        crypto/crypto.cc
 	utils/exception.cc
 	utils/regex.cc
 	utils/utils.cc
