@@ -242,6 +242,7 @@ template <typename hashAlgo>
 std::vector<uint8_t> PBKDF2(const std::string &password, const std::string &salt, int c, size_t dkLen);
 
 /* declare template instanciations */
+extern template std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 extern template std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 extern template std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 extern template std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);
