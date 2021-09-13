@@ -6,6 +6,8 @@ using namespace std;
 namespace bctoolbox{
 
 /**
+ * Ref : https://en.wikipedia.org/wiki/PBKDF2
+ *
  * @brief Xor iterations of chained HMAC-SHA-256
  *
  * @param[in] password  Word in which the HMAC-SHA-256 is applied

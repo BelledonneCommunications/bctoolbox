@@ -1002,6 +1002,7 @@ static void PBKDF2_HMAC_SHA_256_test(void) {
     std::vector<uint8_t> res;
     std::vector<uint8_t> excp;
 
+    /* Test vectors for PBKDF2-SHA256 from https://stackoverflow.com/questions/5130513/pbkdf2-hmac-sha2-test-vectors */
     /* Test 256.1 */
     password = "password";
     salt = "salt";
@@ -1014,6 +1015,7 @@ static void PBKDF2_HMAC_SHA_256_test(void) {
                 0x08, 0x05, 0x98, 0x7c, 0xb7, 0x0b, 0xe1, 0x7b};
     BC_ASSERT_TRUE(excp == res);
 
+    /* Test vectors for PBKDF2-SHA256 from RFC 7914 */
     /* Test 256.2 */
     password = "passwd";
     salt = "salt";
@@ -1038,6 +1040,7 @@ static void PBKDF2_HMAC_SHA_256_test(void) {
             0x6a, 0x27, 0x2b, 0xde, 0xbb, 0xa1, 0xd0, 0x78, 0x47, 0x8f, 0x62, 0xb3, 0x97, 0xf3, 0x3c, 0x8d};
     BC_ASSERT_TRUE(excp == res);
 
+    /* Test vectors for PBKDF2-[SHA256, SHA384, SHA512] from https://github.com/brycx/Test-Vector-Generation/blob/master/PBKDF2/pbkdf2-hmac-sha2-test-vectors.md */
     /* Test 256.4 */
     password = "password";
     salt = "salt";
