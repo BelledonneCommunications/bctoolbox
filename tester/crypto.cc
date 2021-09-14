@@ -1004,7 +1004,7 @@ static void AEAD(void) {
 	BC_ASSERT_TRUE(plain==pattern_plain);
 }
 
-static void PBKDF2_HMAC_SHA_256_test(void) {
+static void PBKDF2_test(void) {
     std::string password;
     std::string salt;
     int c;
@@ -1293,7 +1293,7 @@ static test_t crypto_tests[] = {
 	TEST_NO_TAG("Hash functions", hash_test),
 	TEST_NO_TAG("RNG", rng_test),
     TEST_NO_TAG("AEAD", AEAD),
-    TEST_NO_TAG("PBKDF2_HMAC_SHA_256", PBKDF2_HMAC_SHA_256_test),
+    TEST_NO_TAG("PBKDF2", PBKDF2_test),
 };
 
 test_suite_t crypto_test_suite = {"Crypto", NULL, NULL, NULL, NULL,

@@ -39,7 +39,7 @@ static vector<uint8_t> F(const vector<uint8_t>& password, vector<uint8_t> salt, 
 }
 
 template<typename hashAlgo>
-vector<uint8_t> PBKDF2(const string& password, const string& salt, int c, size_t dkLen){
+vector<uint8_t> PBKDF2_bis(const string& password, const string& salt, int c, size_t dkLen){
     vector<uint8_t> P(password.begin(), password.end());
     const vector<uint8_t> S(salt.begin(), salt.end());
     vector<uint8_t> DK{};
@@ -60,9 +60,9 @@ vector<uint8_t> PBKDF2(const string& password, const string& salt, int c, size_t
     return DK;
 }
 
-template std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const std::string &salt, int c, size_t dkLen);
-template std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, int c, size_t dkLen);
-template std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, int c, size_t dkLen);
-template std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+template std::vector<uint8_t> PBKDF2_bis<SHA1>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+template std::vector<uint8_t> PBKDF2_bis<SHA256>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+template std::vector<uint8_t> PBKDF2_bis<SHA384>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+template std::vector<uint8_t> PBKDF2_bis<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 
 } // namespace bctoolbox

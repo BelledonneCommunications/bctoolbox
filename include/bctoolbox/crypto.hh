@@ -238,14 +238,24 @@ template <> bool AEADDecrypt<AES256GCM128>(const std::vector<uint8_t> &key, cons
  *
  * @return  The generated derived key
  */
+
 template <typename hashAlgo>
-std::vector<uint8_t> PBKDF2(const std::string &password, const std::string &salt, int c, size_t dkLen);
+std::vector<uint8_t> PBKDF2_bis(const std::string &password, const std::string &salt, int c, size_t dkLen);
 
 /* declare template instanciations */
-extern template std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const std::string &salt, int c, size_t dkLen);
-extern template std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, int c, size_t dkLen);
-extern template std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, int c, size_t dkLen);
-extern template std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+extern template std::vector<uint8_t> PBKDF2_bis<SHA1>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+extern template std::vector<uint8_t> PBKDF2_bis<SHA256>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+extern template std::vector<uint8_t> PBKDF2_bis<SHA384>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+extern template std::vector<uint8_t> PBKDF2_bis<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);
+
+template <typename hashAlgo>
+std::vector<uint8_t> PBKDF2(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen);
+
+/* declarre template specifications */
+template <> std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen);
+template <> std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen);
+template <> std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen);
+template <> std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen);
 
 } // namespace bctoolbox
 #endif // BCTBX_CRYPTO_HH
