@@ -138,6 +138,13 @@ std::vector<uint8_t> HMAC(const std::vector<uint8_t> &key, const std::vector<uin
 	return std::vector<uint8_t>(0);
 }
 
+/* HMAC specialized template for SHA1 */
+template <> std::vector<uint8_t> HMAC<SHA1>(const std::vector<uint8_t> &key, const std::vector<uint8_t> &input) {
+    std::vector<uint8_t> hmacOutput(SHA1::ssize());
+    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), key.data(), key.size(), input.data(), input.size(), hmacOutput.data());
+    return  hmacOutput;
+}
+
 /* HMAC specialized template for SHA256 */
 template <> std::vector<uint8_t> HMAC<SHA256>(const std::vector<uint8_t> &key, const std::vector<uint8_t> &input) {
 	std::vector<uint8_t> hmacOutput(SHA256::ssize());
@@ -208,6 +215,85 @@ template <> std::vector<uint8_t> HKDF<SHA512>(const std::vector<uint8_t> &salt, 
 	}
 	return okm;
 };
+
+template <typename hashAlgo>
+std::vector<uint8_t> PBKDF2(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen) {
+    /* if this template is instanciated the static_assert will fail but will give us an error message */
+    static_assert(sizeof(hashAlgo) != sizeof(hashAlgo), "You must specialize PBKDF2 function template");
+    return std::vector<uint8_t>(0);
+}
+
+template <> std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen) {
+    std::vector<uint8_t> pbkdf2Output(SHA1::ssize());
+    mbedtls_md_context_t sha_ctx;
+    const mbedtls_md_info_t *info_sha;
+    std::vector<uint8_t> P(password.begin(), password.end());
+    const std::vector<uint8_t> S(salt.begin(), salt.end());
+
+    mbedtls_md_init(&sha_ctx );
+    info_sha = mbedtls_md_info_from_type( MBEDTLS_MD_SHA1 );
+    mbedtls_md_setup( &sha_ctx, info_sha, 1 );
+
+    mbedtls_pkcs5_pbkdf2_hmac(&sha_ctx, P.data(), P.size(), S.data(), S.size(), c, dkLen, pbkdf2Output.data());
+
+    bctbx_clean(P.data(), P.size());
+
+    return  pbkdf2Output;
+}
+
+template <> std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen) {
+    std::vector<uint8_t> pbkdf2Output(SHA256::ssize());
+    mbedtls_md_context_t sha_ctx;
+    const mbedtls_md_info_t *info_sha;
+    std::vector<uint8_t> P(password.begin(), password.end());
+    const std::vector<uint8_t> S(salt.begin(), salt.end());
+
+    mbedtls_md_init(&sha_ctx );
+    info_sha = mbedtls_md_info_from_type( MBEDTLS_MD_SHA256 );
+    mbedtls_md_setup( &sha_ctx, info_sha, 1 );
+
+    mbedtls_pkcs5_pbkdf2_hmac(&sha_ctx, P.data(), P.size(), S.data(), S.size(), c, dkLen, pbkdf2Output.data());
+
+    bctbx_clean(P.data(), P.size());
+
+    return  pbkdf2Output;
+}
+
+template <> std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen) {
+    std::vector<uint8_t> pbkdf2Output(SHA384::ssize());
+    mbedtls_md_context_t sha_ctx;
+    const mbedtls_md_info_t *info_sha;
+    std::vector<uint8_t> P(password.begin(), password.end());
+    const std::vector<uint8_t> S(salt.begin(), salt.end());
+
+    mbedtls_md_init(&sha_ctx );
+    info_sha = mbedtls_md_info_from_type( MBEDTLS_MD_SHA384 );
+    mbedtls_md_setup( &sha_ctx, info_sha, 1 );
+
+    mbedtls_pkcs5_pbkdf2_hmac(&sha_ctx, P.data(), P.size(), S.data(), S.size(), c, dkLen, pbkdf2Output.data());
+
+    bctbx_clean(P.data(), P.size());
+
+    return  pbkdf2Output;
+}
+
+template <> std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, unsigned int c, unsigned int dkLen) {
+    std::vector<uint8_t> pbkdf2Output(SHA512::ssize());
+    mbedtls_md_context_t sha_ctx;
+    const mbedtls_md_info_t *info_sha;
+    std::vector<uint8_t> P(password.begin(), password.end());
+    const std::vector<uint8_t> S(salt.begin(), salt.end());
+
+    mbedtls_md_init(&sha_ctx );
+    info_sha = mbedtls_md_info_from_type( MBEDTLS_MD_SHA512 );
+    mbedtls_md_setup( &sha_ctx, info_sha, 1 );
+
+    mbedtls_pkcs5_pbkdf2_hmac(&sha_ctx, P.data(), P.size(), S.data(), S.size(), c, dkLen, pbkdf2Output.data());
+
+    bctbx_clean(P.data(), P.size());
+
+    return  pbkdf2Output;
+}
 
 #else // MBEDTLS_VERSION_NUMBER >= 0x020B0000 - HKDF not provided by mbedtls
 
