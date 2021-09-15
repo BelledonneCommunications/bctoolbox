@@ -225,7 +225,7 @@ std::vector<uint8_t> PBKDF2(const std::string &password, const std::string &salt
 }
 
 template <> std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const std::string &salt, unsigned int c, uint32_t dkLen) {
-    std::vector<uint8_t> pbkdf2Output(SHA1::ssize());
+    std::vector<uint8_t> pbkdf2Output(dkLen);
     mbedtls_md_context_t sha_ctx;
     const mbedtls_md_info_t *info_sha;
     std::vector<uint8_t> P(password.begin(), password.end());
@@ -243,7 +243,7 @@ template <> std::vector<uint8_t> PBKDF2<SHA1>(const std::string &password, const
 }
 
 template <> std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, const std::string &salt, unsigned int c, uint32_t dkLen) {
-    std::vector<uint8_t> pbkdf2Output(SHA256::ssize());
+    std::vector<uint8_t> pbkdf2Output(dkLen);
     mbedtls_md_context_t sha_ctx;
     const mbedtls_md_info_t *info_sha;
     std::vector<uint8_t> P(password.begin(), password.end());
@@ -261,7 +261,7 @@ template <> std::vector<uint8_t> PBKDF2<SHA256>(const std::string &password, con
 }
 
 template <> std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, const std::string &salt, unsigned int c, uint32_t dkLen) {
-    std::vector<uint8_t> pbkdf2Output(SHA384::ssize());
+    std::vector<uint8_t> pbkdf2Output(dkLen);
     mbedtls_md_context_t sha_ctx;
     const mbedtls_md_info_t *info_sha;
     std::vector<uint8_t> P(password.begin(), password.end());
@@ -279,7 +279,7 @@ template <> std::vector<uint8_t> PBKDF2<SHA384>(const std::string &password, con
 }
 
 template <> std::vector<uint8_t> PBKDF2<SHA512>(const std::string &password, const std::string &salt, unsigned int c, uint32_t dkLen) {
-    std::vector<uint8_t> pbkdf2Output(SHA512::ssize());
+    std::vector<uint8_t> pbkdf2Output(dkLen);
     mbedtls_md_context_t sha_ctx;
     const mbedtls_md_info_t *info_sha;
     std::vector<uint8_t> P(password.begin(), password.end());

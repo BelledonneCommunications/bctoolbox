@@ -1007,8 +1007,8 @@ static void AEAD(void) {
 static void PBKDF2_test(void) {
     std::string password;
     std::string salt;
-    int c;
-    size_t dkLen;
+    unsigned int c;
+    uint32_t dkLen;
     std::vector<uint8_t> res;
     std::vector<uint8_t> excp;
 
