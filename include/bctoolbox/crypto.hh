@@ -227,6 +227,8 @@ template <> bool AEADDecrypt<AES256GCM128>(const std::vector<uint8_t> &key, cons
 
 /************************ PBKDF2 interface ************************/
 /**
+ * Ref : https://en.wikipedia.org/wiki/PBKDF2
+ *
  * @brief Key derivation function using HMAC-SHA
  *
  * @param[in]   password    Word from which the derived key is generated (can't contain the character '\0')
@@ -247,8 +249,6 @@ extern template std::vector<uint8_t> PBKDF2_bis<SHA384>(const std::string &passw
 extern template std::vector<uint8_t> PBKDF2_bis<SHA512>(const std::string &password, const std::string &salt, int c, size_t dkLen);
 
 /**
- * Ref : https://en.wikipedia.org/wiki/PBKDF2
- *
  * @brief Key derivation function using HMAC-SHA
  *
  * @param[in]   password    Word from which the derived key is generated (can't contain the character '\0')
