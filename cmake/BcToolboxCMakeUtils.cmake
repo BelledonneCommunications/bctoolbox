@@ -29,7 +29,8 @@ macro(bc_init_compilation_flags CPP_FLAGS C_FLAGS CXX_FLAGS STRICT_COMPILATION)
 	if(MSVC)
 		if(${STRICT_COMPILATION})
 			list(APPEND ${CPP_FLAGS} "/WX")
-			list(APPEND STRICT_OPTIONS_CPP "/wd4996") # Disable deprecated function warnings
+			list(APPEND STRICT_OPTIONS_CPP "/wd4996") # Disable deprecated function warnings 
+			list(APPEND STRICT_OPTIONS_CPP "/wd4800") # Disable warning for cast from bool_t to bool
 		endif()
 	else()
 		list(APPEND ${CPP_FLAGS} "-Wall" "-Wuninitialized")
