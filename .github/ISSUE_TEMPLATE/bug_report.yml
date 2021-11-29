@@ -43,10 +43,11 @@ body:
 - type: textarea
   attributes:
     label: |
-            Please explain the context (ex: Running with sip.linphone.org/own self-hosted server with [...] SIP server of version [...]) :
+            Context
     description: |
                   - For which purpose do you use the project ?
                   - With which software/hardware it is integrated ?
+                  - Did you use sip.linphone.org or a different SIP service (in this case specify which one and which version) ?
     placeholder: |
             I use this project in a custom app running on Linux with the sip.linphone.org service for my company. I want to do a simple call between an Android phone and a Linux client. There is an error with a method of this project and I'm sure that I followed the documentation and double checked before posting.
   validations:
@@ -55,14 +56,20 @@ body:
 - type: textarea
   attributes:
     label: General information
-    value: |
-            - Device: [e.g. Samsung Note 20 Ultra]
-            - OS: [e.g. Android 11]
-            - Version of the App [e.g. 4.3.1]
-            - Version of the SDK [e.g 4.4.16]
+    description: |
+                  Complete it multiple time if there are multiple devices involved.
+                  Please note that the issue has more chances to be read if you report a bug seen in the latest version of the module.
 
-            Complete it multiple time if there are multiple devices involved.
-            Please note that the issue has more chances to be read if you report a bug seen in the latest version of the module.
+                  Ex:
+                  - Device: [e.g. Samsung Note 20 Ultra]
+                  - OS: [e.g. Android 11]
+                  - Version of the App [e.g. 4.3.1]
+                  - Version of the SDK [e.g 4.4.16]
+  placeholder: |
+                - Device:
+                - OS:
+                - Version of the App:
+                - Version of the SDK:
   validations:
     required: true
 
@@ -70,7 +77,7 @@ body:
   attributes:
     label: Expected behaviour
     description: "A clear and concise description of what you expected to happen."
-    value: |
+    placeholder: |
             I wanted to do a simple call with the Linux client calling the Android phone. However, the phone doesn't ring when it is asleep.
   validations:
     required: true
@@ -79,7 +86,7 @@ body:
   attributes:
     label: To Reproduce
     description: "Steps to reproduce the behavior:"
-    value: |
+    placeholder: |
             1. Go to '...'
             2. Click on '....'
             3. Scroll down to '....'
@@ -103,8 +110,6 @@ body:
 - type: input
   attributes:
     label: 'SDK logs URL'
-  validations:
-    required: true
 
 - type: markdown
   attributes:
