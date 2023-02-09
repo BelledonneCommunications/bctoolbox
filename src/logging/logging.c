@@ -21,6 +21,7 @@
 #include "config.h"
 #endif
 
+#include "bctoolbox/defs.h"
 #include "bctoolbox/logging.h"
 
 #ifdef _WIN32
@@ -156,7 +157,7 @@ static bctbx_logger_t* bctbx_get_logger(void) {
 	return &main_logger;
 }
 
-void bctbx_init_logger(bool_t create) {
+void bctbx_init_logger(UNUSED(bool_t create)) {
 	bctbx_get_logger();
 }
 
@@ -589,7 +590,7 @@ void bctbx_logv_out( const char *domain, BctbxLogLevel lev, const char *fmt, va_
 	bctbx_logv_out_cb(NULL, domain, lev, fmt, args);
 }
 /*This function does the default formatting and output to file*/
-void bctbx_logv_out_cb(void* user_info, const char *domain, BctbxLogLevel lev, const char *fmt, va_list args){
+void bctbx_logv_out_cb(UNUSED(void* user_info), const char *domain, BctbxLogLevel lev, const char *fmt, va_list args){
 	const char *lname="undef";
 	char *msg;
 	struct timeval tp;
@@ -834,6 +835,10 @@ void bctbx_logv_file_destroy(bctbx_log_handler_t* handler) {
 	bctbx_logv_out_destroy(handler);
 }
 
+#ifndef _MSC_VER
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif // _MSC_VER
 void bctbx_set_thread_log_level(const char *domain, BctbxLogLevel level){
 #ifdef THREAD_LOG_LEVEL_ENABLED
 	BctoolboxLogDomain * ld = get_log_domain(domain);
@@ -844,8 +849,14 @@ void bctbx_set_thread_log_level(const char *domain, BctbxLogLevel level){
 	ld->thread_level_set = TRUE;
 #endif
 }
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif // _MSC_VER
 
-
+#ifndef _MSC_VER
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif // _MSC_VER
 void bctbx_clear_thread_log_level(const char *domain){
 #ifdef THREAD_LOG_LEVEL_ENABLED
 	BctoolboxLogDomain * ld = get_log_domain(domain);
@@ -853,7 +864,9 @@ void bctbx_clear_thread_log_level(const char *domain){
 	if (specific) *specific = 0;
 #endif
 }
-
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif // _MSC_VER
 
 #ifdef __QNX__
 #include <slog2.h>

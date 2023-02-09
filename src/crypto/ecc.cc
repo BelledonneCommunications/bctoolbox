@@ -21,6 +21,7 @@
 #include "config.h"
 #endif
 
+#include "bctoolbox/defs.h"
 #include <bctoolbox/crypto.h>
 
 #ifdef HAVE_DECAF
@@ -181,7 +182,8 @@ void bctbx_ECDHCreateKeyPair(bctbx_ECDHContext_t *context, int (*rngFunction)(vo
 }
 
 /* compute secret - the ->peerPublic field of context must have been set before calling this function */
-void bctbx_ECDHComputeSecret(bctbx_ECDHContext_t *context, int (*rngFunction)(void *, uint8_t *, size_t), void *rngContext) {
+void bctbx_ECDHComputeSecret(bctbx_ECDHContext_t *context, int (*rngFunction)(void *, uint8_t *, size_t), UNUSED(void *rngContext)) {
+	((void)rngFunction);
 	if (context != NULL && context->secret!=NULL && context->peerPublic!=NULL) {
 		if (context->sharedSecret == NULL) { /* allocate buffer if needed */
 			context->sharedSecret = (uint8_t *)bctbx_malloc(context->pointCoordinateLength);
@@ -510,23 +512,32 @@ void bctbx_EDDSA_ECDH_publicKeyConversion(const bctbx_EDDSAContext_t *ed, bctbx_
 
 /* We do not have lib decaf, implement empty stubs */
 int bctbx_crypto_have_ecc(void) { return FALSE;}
-bctbx_ECDHContext_t *bctbx_CreateECDHContext(const uint8_t ECDHAlgo) {return NULL;}
-void bctbx_ECDHCreateKeyPair(bctbx_ECDHContext_t *context, int (*rngFunction)(void *, uint8_t *, size_t), void *rngContext) {return;}
-void bctbx_ECDHSetSecretKey(bctbx_ECDHContext_t *context, const uint8_t *secret, const size_t secretLength){return;}
-void bctbx_ECDHSetSelfPublicKey(bctbx_ECDHContext_t *context, const uint8_t *selfPublic, const size_t selfPublicLength){return;}
-void bctbx_ECDHSetPeerPublicKey(bctbx_ECDHContext_t *context, const uint8_t *peerPublic, const size_t peerPublicLength){return;}
-void bctbx_ECDHDerivePublicKey(bctbx_ECDHContext_t *context){return;}
-void bctbx_ECDHComputeSecret(bctbx_ECDHContext_t *context, int (*rngFunction)(void *, uint8_t *, size_t), void *rngContext){return;}
-void bctbx_DestroyECDHContext(bctbx_ECDHContext_t *context){return;}
+bctbx_ECDHContext_t *bctbx_CreateECDHContext(UNUSED(const uint8_t ECDHAlgo)) {return NULL;}
+void bctbx_ECDHCreateKeyPair(UNUSED(bctbx_ECDHContext_t *context), int (*rngFunction)(void *, uint8_t *, size_t), UNUSED(void *rngContext)) {
+	((void)rngFunction);
+	return;
+}
+void bctbx_ECDHSetSecretKey(UNUSED(bctbx_ECDHContext_t *context),UNUSED( const uint8_t *secret),UNUSED( const size_t secretLength)){return;}
+void bctbx_ECDHSetSelfPublicKey(UNUSED(bctbx_ECDHContext_t *context),UNUSED( const uint8_t *selfPublic),UNUSED( const size_t selfPublicLength)){return;}
+void bctbx_ECDHSetPeerPublicKey(UNUSED(bctbx_ECDHContext_t *context),UNUSED( const uint8_t *peerPublic),UNUSED( const size_t peerPublicLength)){return;}
+void bctbx_ECDHDerivePublicKey(UNUSED(bctbx_ECDHContext_t *context)){return;}
+void bctbx_ECDHComputeSecret(UNUSED(bctbx_ECDHContext_t *context), int (*rngFunction)(void *, uint8_t *, size_t), UNUSED(void *rngContext)){
+	((void)rngFunction);
+	return;
+}
+void bctbx_DestroyECDHContext(UNUSED(bctbx_ECDHContext_t *context)){return;}
 
-bctbx_EDDSAContext_t *bctbx_CreateEDDSAContext(uint8_t EDDSAAlgo) {return NULL;}
-void bctbx_EDDSACreateKeyPair(bctbx_EDDSAContext_t *context, int (*rngFunction)(void *, uint8_t *, size_t), void *rngContext) {return;}
-void bctbx_EDDSADerivePublicKey(bctbx_EDDSAContext_t *context) {return;}
-void bctbx_DestroyEDDSAContext(bctbx_EDDSAContext_t *context) {return;}
-void bctbx_EDDSA_sign(bctbx_EDDSAContext_t *context, const uint8_t *message, const size_t messageLength, const uint8_t *associatedData, const uint8_t associatedDataLength, uint8_t *signature, size_t *signatureLength) {return;}
-void bctbx_EDDSA_setPublicKey(bctbx_EDDSAContext_t *context, const uint8_t *publicKey, const size_t publicKeyLength) {return;}
-void bctbx_EDDSA_setSecretKey(bctbx_EDDSAContext_t *context, const uint8_t *secretKey, const size_t secretKeyLength) {return;}
-int bctbx_EDDSA_verify(bctbx_EDDSAContext_t *context, const uint8_t *message, size_t messageLength, const uint8_t *associatedData, const uint8_t associatedDataLength, const uint8_t *signature, size_t signatureLength) {return BCTBX_VERIFY_FAILED;}
-void bctbx_EDDSA_ECDH_privateKeyConversion(const bctbx_EDDSAContext_t *ed, bctbx_ECDHContext_t *x) {return;}
-void bctbx_EDDSA_ECDH_publicKeyConversion(const bctbx_EDDSAContext_t *ed, bctbx_ECDHContext_t *x, uint8_t isSelf) {return;}
+bctbx_EDDSAContext_t *bctbx_CreateEDDSAContext(UNUSED(uint8_t EDDSAAlgo)) {return NULL;}
+void bctbx_EDDSACreateKeyPair(UNUSED(bctbx_EDDSAContext_t *context), int (*rngFunction)(void *, uint8_t *, size_t), UNUSED(void *rngContext)) {
+	((void)rngFunction);
+	return;
+}
+void bctbx_EDDSADerivePublicKey(UNUSED(bctbx_EDDSAContext_t *context)) {return;}
+void bctbx_DestroyEDDSAContext(UNUSED(bctbx_EDDSAContext_t *context)) {return;}
+void bctbx_EDDSA_sign(UNUSED(bctbx_EDDSAContext_t *context),UNUSED( const uint8_t *message),UNUSED( const size_t messageLength),UNUSED( const uint8_t *associatedData),UNUSED( const uint8_t associatedDataLength),UNUSED( uint8_t *signature),UNUSED( size_t *signatureLength)) {return;}
+void bctbx_EDDSA_setPublicKey(UNUSED(bctbx_EDDSAContext_t *context),UNUSED( const uint8_t *publicKey),UNUSED( const size_t publicKeyLength)) {return;}
+void bctbx_EDDSA_setSecretKey(UNUSED(bctbx_EDDSAContext_t *context),UNUSED( const uint8_t *secretKey),UNUSED( const size_t secretKeyLength)) {return;}
+int bctbx_EDDSA_verify(UNUSED(bctbx_EDDSAContext_t *context),UNUSED( const uint8_t *message),UNUSED( size_t messageLength),UNUSED( const uint8_t *associatedData),UNUSED( const uint8_t associatedDataLength),UNUSED( const uint8_t *signature),UNUSED( size_t signatureLength)) {return BCTBX_VERIFY_FAILED;}
+void bctbx_EDDSA_ECDH_privateKeyConversion(UNUSED(const bctbx_EDDSAContext_t *ed), UNUSED( bctbx_ECDHContext_t *x)) {return;}
+void bctbx_EDDSA_ECDH_publicKeyConversion(UNUSED(const bctbx_EDDSAContext_t *ed), UNUSED( bctbx_ECDHContext_t *x),UNUSED( uint8_t isSelf)) {return;}
 #endif

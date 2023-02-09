@@ -32,8 +32,7 @@
 #include <mbedtls/hkdf.h> // HKDF implemented in version 2.11.0 of mbedtls
 #endif
 
-
-
+#include "bctoolbox/defs.h"
 #include "bctoolbox/crypto.hh"
 #include "bctoolbox/crypto.h"
 #include "bctoolbox/exception.hh"
@@ -132,7 +131,7 @@ uint32_t RNG::cRandomize() {
 /* HMAC templates */
 /* HMAC must use a specialized template */
 template <typename hashAlgo>
-std::vector<uint8_t> HMAC(const std::vector<uint8_t> &key, const std::vector<uint8_t> &input) {
+std::vector<uint8_t> HMAC(UNUSED(const std::vector<uint8_t> &key), UNUSED(const std::vector<uint8_t> &input)) {
 	/* if this template is instanciated the static_assert will fail but will give us an error message */
 	static_assert(sizeof(hashAlgo) != sizeof(hashAlgo), "You must specialize HMAC function template");
 	return std::vector<uint8_t>(0);
@@ -170,13 +169,13 @@ template <> std::vector<uint8_t> HMAC<SHA512>(const std::vector<uint8_t> &key, c
 /* HKDF templates */
 /* HKDF must use a specialized template */
 template <typename hashAlgo>
-std::vector<uint8_t> HKDF(const std::vector<uint8_t> &salt, const std::vector<uint8_t> &ikm, const std::vector<uint8_t> &info, size_t okmSize) {
+std::vector<uint8_t> HKDF(UNUSED(const std::vector<uint8_t> &salt), UNUSED(const std::vector<uint8_t> &ikm), UNUSED(const std::vector<uint8_t> &info), UNUSED(size_t okmSize)) {
 	/* if this template is instanciated the static_assert will fail but will give us an error message */
 	static_assert(sizeof(hashAlgo) != sizeof(hashAlgo), "You must specialize HKDF function template");
 	return std::vector<uint8_t>(0);
 }
 template <typename hashAlgo>
-std::vector<uint8_t> HKDF(const std::vector<uint8_t> &salt, const std::vector<uint8_t> &ikm, const std::string &info, size_t okmSize) {
+std::vector<uint8_t> HKDF(UNUSED(const std::vector<uint8_t> &salt), UNUSED(const std::vector<uint8_t> &ikm), UNUSED(const std::string &info), UNUSED(size_t okmSize)) {
 	/* if this template is instanciated the static_assert will fail but will give us an error message */
 	static_assert(sizeof(hashAlgo) != sizeof(hashAlgo), "You must specialize HKDF function template");
 
@@ -293,16 +292,16 @@ template <> std::vector<uint8_t> HKDF<SHA512>(const std::vector<uint8_t> &salt, 
 /*****************************************************************************/
 /* AEAD template must be specialized */
 template <typename AEADAlgo>
-std::vector<uint8_t> AEADEncrypt(const std::vector<uint8_t> &key, const std::vector<uint8_t> IV, const std::vector<uint8_t> &plain, const std::vector<uint8_t> &AD,
-		std::vector<uint8_t> &tag) {
+std::vector<uint8_t> AEADEncrypt(UNUSED(const std::vector<uint8_t> &key), UNUSED(const std::vector<uint8_t> IV), UNUSED(const std::vector<uint8_t> &plain), UNUSED(const std::vector<uint8_t> &AD),
+		UNUSED(std::vector<uint8_t> &tag)) {
 	/* if this template is instanciated the static_assert will fail but will give us an error message with faulty type */
 	static_assert(sizeof(AEADAlgo) != sizeof(AEADAlgo), "You must specialize AEADEncrypt function template");
 	return std::vector<uint8_t>(0);
 }
 
 template <typename AEADAlgo>
-bool AEADDecrypt(const std::vector<uint8_t> &key, const std::vector<uint8_t> &IV, const std::vector<uint8_t> &cipher, const std::vector<uint8_t> &AD,
-		const std::vector<uint8_t> &tag, std::vector<uint8_t> &plain) {
+bool AEADDecrypt(UNUSED(const std::vector<uint8_t> &key), UNUSED(const std::vector<uint8_t> &IV), UNUSED(const std::vector<uint8_t> &cipher), UNUSED(const std::vector<uint8_t> &AD),
+		UNUSED(const std::vector<uint8_t> &tag), UNUSED(std::vector<uint8_t> &plain)) {
 	/* if this template is instanciated the static_assert will fail but will give us an error message with faulty type */
 	static_assert(sizeof(AEADAlgo) != sizeof(AEADAlgo), "You must specialize AEADEncrypt function template");
 	return false;

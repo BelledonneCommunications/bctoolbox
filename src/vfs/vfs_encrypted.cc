@@ -18,6 +18,7 @@
  */
 
 
+#include "bctoolbox/defs.h"
 #include "bctoolbox/vfs.h"
 #include "bctoolbox/vfs_encrypted.hh"
 #include "vfs_encryption_module.hh"
@@ -875,9 +876,7 @@ static const  bctbx_io_methods_t bcio = {
 	bcIsEncrypted
 };
 
-
-
-static int bcOpen(bctbx_vfs_t *pVfs, bctbx_vfs_file_t *pFile, const char *fName, int openFlags) {
+static int bcOpen(UNUSED(bctbx_vfs_t *pVfs), bctbx_vfs_file_t *pFile, const char *fName, int openFlags) {
 	VfsEncryption *ctx = nullptr;
 	bctbx_vfs_file_t *stdFp = nullptr;
 	try {

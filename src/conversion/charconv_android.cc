@@ -24,6 +24,7 @@
 #include "bctoolbox/charconv.h"
 #include "bctoolbox/logging.h"
 #include "bctoolbox/port.h"
+#include "bctoolbox/defs.h"
 
 char *bctbx_locale_to_utf8 (const char *str) {
 	// TODO remove this part when the NDK will contain a usable iconv
@@ -35,29 +36,29 @@ char *bctbx_utf8_to_locale (const char *str) {
 	return bctbx_strdup(str);
 }
 
-char *bctbx_convert_any_to_utf8 (const char *str, const char *encoding) {
+char *bctbx_convert_any_to_utf8 (const char *str, UNUSED(const char *encoding)) {
 	// TODO change this part when the NDK will contain a usable iconv
 	return bctbx_strdup(str);
 }
 
-char *bctbx_convert_utf8_to_any (const char *str, const char *encoding) {
+char *bctbx_convert_utf8_to_any (const char *str, UNUSED(const char *encoding)) {
 	// TODO change this part when the NDK will contain a usable iconv
 	return bctbx_strdup(str);
 }
 
-char *bctbx_convert_string (const char *str, const char *from_encoding, const char *to_encoding) {
+char *bctbx_convert_string (const char *str, UNUSED(const char *from_encoding), UNUSED(const char *to_encoding)) {
 	// TODO change this part when the NDK will contain a usable iconv
 	return bctbx_strdup(str);
 }
 
 
-wchar_t* bctbx_string_to_wide_string(const char* str){
+wchar_t* bctbx_string_to_wide_string(UNUSED(const char* str)) {
 // TODO	
 	bctbx_error("Conversion from string to wide string is not implemented");
     return NULL;
 }
 
-unsigned int bctbx_get_code_page(const char* encoding){
+unsigned int bctbx_get_code_page(UNUSED(const char* encoding)) {
 	bctbx_error("Getting code page is not implemented");
 	return 0;
 }

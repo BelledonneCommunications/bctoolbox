@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include "bctoolbox/defs.h"
 #include "bctoolbox/logging.h"
 #include "bctoolbox/port.h"
 #include "bctoolbox/vconnect.h"
@@ -916,6 +917,10 @@ void bctbx_shm_close(void *mem){
 #include <sys/timeb.h>
 #endif
 
+#ifndef _MSC_VER
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif // _MSC_VER
 void _bctbx_get_cur_time(bctoolboxTimeSpec *ret, bool_t realtime){
 #if defined(_WIN32_WCE) || defined(WIN32)
 #if defined(BCTBX_WINDOWS_DESKTOP) && !defined(ENABLE_MICROSOFT_STORE_APP) && !defined(BCTBX_WINDOWS_UWP)
@@ -952,6 +957,9 @@ void _bctbx_get_cur_time(bctoolboxTimeSpec *ret, bool_t realtime){
 	ret->tv_nsec=ts.tv_nsec;
 #endif
 }
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif // _MSC_VER
 
 void bctbx_get_utc_cur_time(bctoolboxTimeSpec *ret){
 	_bctbx_get_cur_time(ret, TRUE);
@@ -2017,7 +2025,7 @@ int bctbx_strcmp(const char *a, const char *b) {
 }
 
 #if !defined(_WIN32)
-void bctbx_set_stack_trace_hooks(bool_t use_bctbx_hooks){
+void bctbx_set_stack_trace_hooks(UNUSED(bool_t use_bctbx_hooks)){
 	bctbx_warning("bctbx_set_stack_trace_hooks(): not implemented on this platform.");
 }
 #endif

@@ -24,6 +24,7 @@
 #include <bctoolbox/logging.h>
 #include <bctoolbox/tester.h>
 #include <bctoolbox/vfs.h>
+#include <bctoolbox/defs.h>
 
 #include <stdlib.h>
 #include <time.h>
@@ -401,7 +402,7 @@ void merge_and_print_results_files(void) {
 	}
 }
 
-static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
+static void all_complete_message_handler(UNUSED(const CU_pFailureRecord pFailure)) {
 #ifdef HAVE_CU_GET_SUITE
 	if (run_in_parallel != 0) {
 		if (suite_name) {
@@ -434,7 +435,7 @@ static void suite_start_message_handler(const CU_pSuite pSuite) {
 	suite_start_time = bctbx_get_cur_time_ms();
 	bc_current_suite_name = pSuite->pName;
 }
-static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
+static void suite_complete_message_handler(const CU_pSuite pSuite, UNUSED(const CU_pFailureRecord pFailure)) {
 	bc_tester_printf(bc_printf_verbosity_info, "Suite [%s] ended in %.3f sec\n", pSuite->pName,
 			 (bctbx_get_cur_time_ms() - suite_start_time) / 1000.f);
 }
@@ -1203,13 +1204,13 @@ static void detect_res_prefix(const char* prog) {
 }
 
 //Default function for the `--verbose`cli option
-int bc_tester_verbose_handler(const char *arg) {
+int bc_tester_verbose_handler(UNUSED(const char * arg)) {
 	bctbx_set_log_level(BCTBX_LOG_DOMAIN, BCTBX_LOG_DEBUG);
 	return 0;
 }
 
 //Default function for the `--silent` cli option
-int bc_tester_silent_handler(const char *arg) {
+int bc_tester_silent_handler(UNUSED(const char *arg)) {
 	bctbx_set_log_level(BCTBX_LOG_DOMAIN, BCTBX_LOG_FATAL);
 	return 0;
 }
@@ -1254,6 +1255,10 @@ void bc_tester_init(void (*ftester_printf)(int level, const char *format, va_lis
 	}
 }
 
+#ifndef _MSC_VER
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif // _MSC_VER
 void bc_tester_set_max_vm(size_t amax_vm_kb) {
 #ifdef __linux__
 	max_vm_kb = (size_t)amax_vm_kb;
@@ -1262,6 +1267,9 @@ void bc_tester_set_max_vm(size_t amax_vm_kb) {
 	bc_tester_printf(bc_printf_verbosity_error, "Maximum virtual memory space setting is only implemented on Linux.");
 #endif
 }
+#ifndef _MSC_VER
+#pragma GCC diagnostic pop
+#endif // _MSC_VER
 
 void bc_tester_helper(const char *name, const char* additionnal_helper) {
 	bc_tester_printf(bc_printf_verbosity_info,

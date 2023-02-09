@@ -21,14 +21,13 @@
 #include "config.h"
 #endif
 
+#include "bctoolbox/defs.h"
 #include "bctoolbox/vfs.h"
 #include "bctoolbox/port.h"
 #include "bctoolbox/logging.h"
 #include <sys/types.h>
 #include <stdarg.h>
 #include <errno.h>
-
-
 
 /**
  * Opens the file with filename fName, associate it to the file handle pointed
@@ -210,7 +209,7 @@ static const  bctbx_io_methods_t bcio = {
 
 
 
-static int bcOpen(bctbx_vfs_t *pVfs, bctbx_vfs_file_t *pFile, const char *fName, int openFlags) {
+static int bcOpen(UNUSED(bctbx_vfs_t * pVfs), bctbx_vfs_file_t *pFile, const char *fName, int openFlags) {
 	if (pFile == NULL || fName == NULL) {
 		return BCTBX_VFS_ERROR;
 	}

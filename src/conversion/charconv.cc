@@ -27,6 +27,7 @@
 #include <locale.h>
 #include <string.h>
 
+#include "bctoolbox/defs.h"
 #include "bctoolbox/charconv.h"
 #include "bctoolbox/logging.h"
 #include "bctoolbox/port.h"
@@ -120,13 +121,13 @@ char *bctbx_convert_string (const char *str, const char *from_encoding, const ch
 	return convert_from_to(str, (from_encoding ? from_encoding : "LOCALE"), (to_encoding ? to_encoding : "LOCALE"));
 }
 
-wchar_t* bctbx_string_to_wide_string(const char* str){
+wchar_t* bctbx_string_to_wide_string(UNUSED(const char* str)){
 // TODO	
 	bctbx_error("Conversion from string to wide string is not implemented");
     return NULL;
 }
 
-unsigned int bctbx_get_code_page(const char* encoding){
+unsigned int bctbx_get_code_page(UNUSED(const char* encoding)){
 	bctbx_error("Getting code page is not implemented");
 	return 0;
 }
