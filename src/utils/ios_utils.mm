@@ -123,11 +123,11 @@ int IOSUtils::getOSMajorVersion() const{
 }
 
 
-unsigned long IOSUtilsStub::beginBackgroundTask(UNUSED(const char *name), UNUSED(std::function<void()> cb)) {
+unsigned long IOSUtilsStub::beginBackgroundTask(BCTBX_UNUSED(const char *name), BCTBX_UNUSED(std::function<void()> cb)) {
     return 0;
 }
 
-void IOSUtilsStub::endBackgroundTask(UNUSED(unsigned long id)) {}
+void IOSUtilsStub::endBackgroundTask(BCTBX_UNUSED(unsigned long id)) {}
 
 bool IOSUtilsStub::isApplicationStateActive() {
     return false;

@@ -402,7 +402,7 @@ void merge_and_print_results_files(void) {
 	}
 }
 
-static void all_complete_message_handler(UNUSED(const CU_pFailureRecord pFailure)) {
+static void all_complete_message_handler(BCTBX_UNUSED(const CU_pFailureRecord pFailure)) {
 #ifdef HAVE_CU_GET_SUITE
 	if (run_in_parallel != 0) {
 		if (suite_name) {
@@ -435,7 +435,7 @@ static void suite_start_message_handler(const CU_pSuite pSuite) {
 	suite_start_time = bctbx_get_cur_time_ms();
 	bc_current_suite_name = pSuite->pName;
 }
-static void suite_complete_message_handler(const CU_pSuite pSuite, UNUSED(const CU_pFailureRecord pFailure)) {
+static void suite_complete_message_handler(const CU_pSuite pSuite, BCTBX_UNUSED(const CU_pFailureRecord pFailure)) {
 	bc_tester_printf(bc_printf_verbosity_info, "Suite [%s] ended in %.3f sec\n", pSuite->pName,
 			 (bctbx_get_cur_time_ms() - suite_start_time) / 1000.f);
 }
@@ -1204,13 +1204,13 @@ static void detect_res_prefix(const char* prog) {
 }
 
 //Default function for the `--verbose`cli option
-int bc_tester_verbose_handler(UNUSED(const char * arg)) {
+int bc_tester_verbose_handler(BCTBX_UNUSED(const char * arg)) {
 	bctbx_set_log_level(BCTBX_LOG_DOMAIN, BCTBX_LOG_DEBUG);
 	return 0;
 }
 
 //Default function for the `--silent` cli option
-int bc_tester_silent_handler(UNUSED(const char *arg)) {
+int bc_tester_silent_handler(BCTBX_UNUSED(const char *arg)) {
 	bctbx_set_log_level(BCTBX_LOG_DOMAIN, BCTBX_LOG_FATAL);
 	return 0;
 }

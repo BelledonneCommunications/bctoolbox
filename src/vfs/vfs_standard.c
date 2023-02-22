@@ -209,7 +209,7 @@ static const  bctbx_io_methods_t bcio = {
 
 
 
-static int bcOpen(UNUSED(bctbx_vfs_t * pVfs), bctbx_vfs_file_t *pFile, const char *fName, int openFlags) {
+static int bcOpen(BCTBX_UNUSED(bctbx_vfs_t * pVfs), bctbx_vfs_file_t *pFile, const char *fName, int openFlags) {
 	if (pFile == NULL || fName == NULL) {
 		return BCTBX_VFS_ERROR;
 	}

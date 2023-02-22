@@ -2025,7 +2025,7 @@ int bctbx_strcmp(const char *a, const char *b) {
 }
 
 #if !defined(_WIN32)
-void bctbx_set_stack_trace_hooks(UNUSED(bool_t use_bctbx_hooks)){
+void bctbx_set_stack_trace_hooks(BCTBX_UNUSED(bool_t use_bctbx_hooks)){
 	bctbx_warning("bctbx_set_stack_trace_hooks(): not implemented on this platform.");
 }
 #endif

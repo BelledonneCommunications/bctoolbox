@@ -157,7 +157,7 @@ static bctbx_logger_t* bctbx_get_logger(void) {
 	return &main_logger;
 }
 
-void bctbx_init_logger(UNUSED(bool_t create)) {
+void bctbx_init_logger(BCTBX_UNUSED(bool_t create)) {
 	bctbx_get_logger();
 }
 
@@ -590,7 +590,7 @@ void bctbx_logv_out( const char *domain, BctbxLogLevel lev, const char *fmt, va_
 	bctbx_logv_out_cb(NULL, domain, lev, fmt, args);
 }
 /*This function does the default formatting and output to file*/
-void bctbx_logv_out_cb(UNUSED(void* user_info), const char *domain, BctbxLogLevel lev, const char *fmt, va_list args){
+void bctbx_logv_out_cb(BCTBX_UNUSED(void* user_info), const char *domain, BctbxLogLevel lev, const char *fmt, va_list args){
 	const char *lname="undef";
 	char *msg;
 	struct timeval tp;

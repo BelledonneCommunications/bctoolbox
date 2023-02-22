@@ -1327,7 +1327,7 @@ int32_t bctbx_ssl_config_set_own_cert(bctbx_ssl_config_t *ssl_config, bctbx_x509
 /* This callback is executed during the DTLS handshake, extract the master secret and randoms needed to generate the DTLS-SRTP keys
  * The generation itself is performed after the handshake */
 static int bctbx_ssl_dtls_srtp_key_derivation(void *key_ctx, const unsigned char *ms,
-		UNUSED(const unsigned char * kb), UNUSED(size_t maclen), UNUSED(size_t keylen), UNUSED(size_t ivlen), // these params are useless for our purpose
+		BCTBX_UNUSED(const unsigned char * kb), BCTBX_UNUSED(size_t maclen), BCTBX_UNUSED(size_t keylen), BCTBX_UNUSED(size_t ivlen), // these params are useless for our purpose
 		const unsigned char client_random[32], const unsigned char server_random[32],
 		mbedtls_tls_prf_types tls_prf_type ) {
 
