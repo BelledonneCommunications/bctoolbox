@@ -65,9 +65,8 @@ bctbx_list_t*  bctbx_list_append(bctbx_list_t* elem, void * data){
 }
 
 bctbx_list_t*  bctbx_list_prepend_link(bctbx_list_t* elem, bctbx_list_t *new_elem){
-	if (elem!=NULL) {
-		new_elem->next=elem;
-		elem->prev=new_elem;
+	if (elem!=NULL) {// NULL => NE => NLE => E => LE => NULL (where N=New, L=Last, E=Elem)
+		new_elem = bctbx_list_append_link(new_elem, elem);
 	}
 	return new_elem;
 }
