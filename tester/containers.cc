@@ -218,10 +218,10 @@ static void list_updates(void){
 	add_list = bctbx_list_append(add_list, &sequence[8]);
 
 // For testing prepended list
-	prep_list = bctbx_list_prepend_link(list, prep_list);
+	prep_list = bctbx_list_concat(prep_list, list);
 
 // For testing added list
-	list = bctbx_list_append_link(prep_list, add_list);
+	list = bctbx_list_concat(prep_list, add_list);
 
 // Check sequence: order and count must be correct.
 	bctbx_list_t * list_it = list;
