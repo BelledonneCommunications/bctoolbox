@@ -593,4 +593,5 @@ test_suite_t encrypted_vfs_test_suite = {"Encrypted vfs",
                                          NULL,
                                          sizeof(encrypted_vfs_tests) /
                                              sizeof(encrypted_vfs_tests[0]),
-                                         encrypted_vfs_tests};
+                                         encrypted_vfs_tests
+                                         , 0};

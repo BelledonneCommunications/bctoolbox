@@ -271,5 +271,5 @@ static test_t vfs_tests[] = {
 	TEST_NO_TAG("File get next line", file_get_nxtline_test)
 };
 
-test_suite_t vfs_test_suite = {"vfs", NULL, NULL, NULL, NULL, sizeof(vfs_tests) / sizeof(vfs_tests[0]), vfs_tests};
+test_suite_t vfs_test_suite = {"vfs", NULL, NULL, NULL, NULL, sizeof(vfs_tests) / sizeof(vfs_tests[0]), vfs_tests, 0};
 

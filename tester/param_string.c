@@ -57,4 +57,4 @@ static test_t param_string_tests[] = {
 };
 
 test_suite_t param_string_test_suite = {"Param string", NULL, NULL, NULL, NULL,
-							   sizeof(param_string_tests) / sizeof(param_string_tests[0]), param_string_tests};
+							   sizeof(param_string_tests) / sizeof(param_string_tests[0]), param_string_tests, 0};

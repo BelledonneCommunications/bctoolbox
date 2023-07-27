@@ -245,4 +245,4 @@ static test_t container_tests[] = {
 };
 
 test_suite_t containers_test_suite = {"Containers", NULL, NULL, NULL, NULL,
-							   sizeof(container_tests) / sizeof(container_tests[0]), container_tests};
+							   sizeof(container_tests) / sizeof(container_tests[0]), container_tests, 0};

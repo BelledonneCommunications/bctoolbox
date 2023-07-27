@@ -245,4 +245,4 @@ static test_t utils_tests[] = {
 };
 
 test_suite_t utils_test_suite = {"Utils", NULL, NULL, NULL, NULL,
-							   sizeof(utils_tests) / sizeof(utils_tests[0]), utils_tests};
+							   sizeof(utils_tests) / sizeof(utils_tests[0]), utils_tests, 0};
