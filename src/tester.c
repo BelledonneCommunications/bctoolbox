@@ -1025,7 +1025,7 @@ int bc_tester_run_parallel(void) {
 				int i;
 				timeoutElapsed = TRUE;
 				for (i = 0; i < effective_suite_count; ++i) {
-					if (suitesPids[i].finished == 0) {
+					if (suitesPids[i].pid != 0 && suitesPids[i].finished == 0) {
 						CU_pSuite unfinishedSuite = bc_tester_registered_suite_index(i);
 						bc_tester_printf(bc_printf_verbosity_error, "Suite [%s] is still running after timeout.",
 						                 unfinishedSuite->pName);
