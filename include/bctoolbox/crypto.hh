@@ -76,9 +76,8 @@ public:
 	~RNG();
 
 private:
-	struct Impl;
-	std::unique_ptr<Impl> pImpl;
-	static std::unique_ptr<Impl> pImplClass;
+	struct Impl;                 /**< a subclass holding the RNG internal implementation */
+	std::unique_ptr<Impl> pImpl; /**< pointer to the actual RNG implementation */
 }; // class RNG
 
 /*****************************************************************************/

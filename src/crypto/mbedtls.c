@@ -906,6 +906,13 @@ int32_t bctbx_ssl_write(bctbx_ssl_context_t *ssl_ctx, const unsigned char *buf, 
 
 int32_t bctbx_ssl_read(bctbx_ssl_context_t *ssl_ctx, unsigned char *buf, size_t buf_length) {
 	int ret = mbedtls_ssl_read(&(ssl_ctx->ssl_ctx), buf, buf_length);
+	if (mbedtls_ssl_get_version_number(&(ssl_ctx->ssl_ctx)) == MBEDTLS_SSL_VERSION_TLS1_3) {
+		while (ret == MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET ||
+		       ssl_ctx->ssl_ctx.MBEDTLS_PRIVATE(state) == MBEDTLS_SSL_TLS1_3_NEW_SESSION_TICKET) {
+			bctbx_message("TLS got session ticket in TLS 1.3 connection, retry read");
+			ret = mbedtls_ssl_read(&(ssl_ctx->ssl_ctx), buf, buf_length);
+		}
+	}
 	/* remap some output code */
 	if (ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY) {
 		ret = BCTBX_ERROR_SSL_PEER_CLOSE_NOTIFY;
@@ -1060,7 +1067,6 @@ bctbx_dtls_srtp_profile_t bctbx_ssl_get_dtls_srtp_protection_profile(BCTBX_UNUSE
 #endif /* HAVE_DTLS_SRTP */
 
 /** DTLS SRTP functions **/
-
 /** config **/
 #ifdef HAVE_DTLS_SRTP
 typedef struct bctbx_dtls_srtp_keys {
@@ -1097,6 +1103,9 @@ bctbx_ssl_config_t *bctbx_ssl_config_new(void) {
 	ssl_config->ssl_config = bctbx_malloc0(sizeof(mbedtls_ssl_config));
 	ssl_config->ssl_config_externally_provided = 0;
 	mbedtls_ssl_config_init(ssl_config->ssl_config);
+
+	mbedtls_ssl_conf_session_tickets(ssl_config->ssl_config, MBEDTLS_SSL_SESSION_TICKETS_DISABLED);
+	mbedtls_ssl_conf_renegotiation(ssl_config->ssl_config, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
 
 	ssl_config->callback_cli_cert_function = NULL;
 	ssl_config->callback_cli_cert_data = NULL;

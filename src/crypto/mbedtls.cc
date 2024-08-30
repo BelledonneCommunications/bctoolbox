@@ -33,6 +33,14 @@
 #include <mbedtls/hkdf.h>                // HKDF implemented in version 2.11.0 of mbedtls
 #endif
 
+#if MBEDTLS_VERSION_NUMBER >= 0x03060000 // v3.6.0
+                                         // starting from version 3.6, use PSA crypto
+#include "bctoolbox/logging.h"
+#include <mutex>
+#include <psa/crypto.h>
+#define BCTBX_USE_MBEDTLS_PSA
+#endif
+
 #include "bctoolbox/crypto.hh"
 #include "bctoolbox/defs.h"
 #include "bctoolbox/exception.hh"
@@ -52,14 +60,81 @@ extern "C" void bctbx_random_bytes(unsigned char *ret, size_t size) {
 
 namespace bctoolbox {
 
+namespace {
+#ifdef BCTBX_USE_MBEDTLS_PSA
+// This is also defined in mbedtls source code by a custom modification
+using mbedtls_threading_mutex_t = void *;
+
+void threading_mutex_init_cpp(mbedtls_threading_mutex_t *mutex) {
+	if (mutex == NULL) {
+		return;
+	}
+	auto m = new std::mutex();
+	*mutex = (void *)m;
+}
+
+void threading_mutex_free_cpp(mbedtls_threading_mutex_t *mutex) {
+	if (mutex == NULL) {
+		return;
+	}
+	delete (static_cast<std::mutex *>(*mutex));
+}
+
+int threading_mutex_lock_cpp(mbedtls_threading_mutex_t *mutex) {
+	if (mutex == NULL) {
+		return MBEDTLS_ERR_THREADING_BAD_INPUT_DATA;
+	}
+	static_cast<std::mutex *>(*mutex)->lock();
+	return 0;
+}
+
+int threading_mutex_unlock_cpp(mbedtls_threading_mutex_t *mutex) {
+	if (mutex == NULL) {
+		return MBEDTLS_ERR_THREADING_BAD_INPUT_DATA;
+	}
+	static_cast<std::mutex *>(*mutex)->unlock();
+	return 0;
+}
+#endif // BCTBX_USE_MBEDTLS_PSA
+
+class mbedtlsStaticContexts {
+public:
+	void randomize(uint8_t *buffer, size_t size) {
+		sRNG->randomize(buffer, size);
+	}
+
+	std::unique_ptr<RNG> sRNG;
+	mbedtlsStaticContexts() {
+#ifdef BCTBX_USE_MBEDTLS_PSA
+		mbedtls_threading_set_alt(threading_mutex_init_cpp, threading_mutex_free_cpp, threading_mutex_lock_cpp,
+		                          threading_mutex_unlock_cpp);
+		if (psa_crypto_init() != PSA_SUCCESS) {
+			bctbx_error("MbedTLS PSA init fail");
+		}
+#endif // BCTBX_USE_MBEDTLS_PSA
+       // Now that mbedtls is ready, instanciate the static RNG
+		sRNG = std::make_unique<RNG>();
+	}
+	~mbedtlsStaticContexts() {
+		// before destroying mbedtls internal context, destroy the static RNG
+		sRNG = nullptr;
+#ifdef BCTBX_USE_MBEDTLS_PSA
+		mbedtls_psa_crypto_free();
+		mbedtls_threading_free_alt();
+#endif // BCTBX_USE_MBEDTLS_PSA
+	}
+};
+static const auto mbedtlsStaticContextsInstance = std::make_unique<mbedtlsStaticContexts>();
+}; // namespace
+
 /*****************************************************************************/
 /***                      Random Number Generation                         ***/
 /*****************************************************************************/
-
 /**
  * @brief Wrapper around mbedtls implementation
  **/
 struct RNG::Impl {
+
 	mbedtls_entropy_context entropy;   /**< entropy context - store it to be able to free it */
 	mbedtls_ctr_drbg_context ctr_drbg; /**< rng context */
 
@@ -84,16 +159,13 @@ struct RNG::Impl {
  * Constructor
  * Just instanciate an implementation
  */
-RNG::RNG() : pImpl(std::unique_ptr<RNG::Impl>(new RNG::Impl())){};
+RNG::RNG() : pImpl(std::make_unique<RNG::Impl>()) {};
 
 /**
  * Destructor
  * Implementation is stored in a unique_ptr, nothing to do
  **/
 RNG::~RNG() = default;
-
-// Instanciate the class RNG context
-std::unique_ptr<RNG::Impl> RNG::pImplClass = std::unique_ptr<RNG::Impl>(new RNG::Impl());
 
 void RNG::randomize(uint8_t *buffer, size_t size) {
 	int ret = mbedtls_ctr_drbg_random(&(pImpl->ctr_drbg), buffer, size);
@@ -126,12 +198,7 @@ uint32_t RNG::randomize() {
  * These use the class RNG context
  */
 void RNG::cRandomize(uint8_t *buffer, size_t size) {
-	int ret = mbedtls_ctr_drbg_random(&(pImplClass->ctr_drbg), buffer, size);
-	if (ret != 0) {
-		throw BCTBX_EXCEPTION << ((ret == MBEDTLS_ERR_CTR_DRBG_REQUEST_TOO_BIG)
-		                              ? "RNG failure: Request too big"
-		                              : "RNG failure: entropy source failure");
-	}
+	mbedtlsStaticContextsInstance->randomize(buffer, size);
 }
 
 uint32_t RNG::cRandomize() {
