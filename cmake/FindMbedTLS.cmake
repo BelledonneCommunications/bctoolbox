@@ -55,10 +55,16 @@ if(TARGET mbedtls)
 	set(MbedTLS_TARGET mbedtls)
 	set(MbedX509_TARGET mbedx509)
 	set(MbedCrypto_TARGET mbedcrypto)
-	set(MbedTLS_VERSION 3)
-	# We are building mbedTLS, we have DTLS-SRTP support
-	set(DTLS_SRTP_AVAILABLE ON)
 
+	get_target_property(MbedTLS_VERSION mbedtls VERSION)
+	if (MbedTLS_VERSION EQUAL "MbedTLS_VERSION-NOTFOUND")
+		set(MbedTLS_VERSION 3)
+	else()
+		string(REPLACE "." ";" MbedTLS_VERSION "${MbedTLS_VERSION}")
+		list(GET MbedTLS_VERSION 0 MbedTLS_VERSION)
+		# We are building mbedTLS, we have DTLS-SRTP support
+		set(DTLS_SRTP_AVAILABLE ON)
+	endif()
 else()
 
 	include(CMakePushCheckState)
@@ -94,7 +100,7 @@ else()
     	message("MESSAGE: MbedTLS_LIBRARY=" ${_MbedTLS_LIBRARY})
 	    message("MESSAGE: MbedX509_LIBRARY=" ${MbedX509_LIBRARY})
   	  message("MESSAGE: MbedCrypto_LIBRARY=" ${MbedCrypto_LIBRARY})
-			set(_MbedTLS_VERSION 1)
+			set(MbedTLS_VERSION 1)
 		else()
 			# Are we mbdetls 2 or 3?
 			# From version 3 and on, version number is given in include/mbedtls/build_info.h.
