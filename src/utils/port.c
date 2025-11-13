@@ -63,6 +63,10 @@
 #define MIN(a, b) a <= b ? a : b
 #endif
 
+#ifndef AI_NUMERICSERV
+#define AI_NUMERICSERV 0
+#endif
+
 static void *bctbx_libc_malloc(size_t sz) {
 	return malloc(sz);
 }
